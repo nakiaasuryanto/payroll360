@@ -17,6 +17,7 @@
     "@tailwindcss/postcss": "^4.1.14",
     "@types/node": "^24.6.2",
     "@types/react": "^19.2.0",
+    "html2canvas": "^1.4.1",
     "next": "^15.5.4",
     "papaparse": "^5.5.3",
     "react": "^19.2.0",

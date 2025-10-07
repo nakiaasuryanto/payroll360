@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import Papa from 'papaparse'
+import html2canvas from 'html2canvas'
 
 interface AbsensiRow {
   Nama: string
@@ -55,7 +56,79 @@ interface ManagerGroup {
   confirmations: ConfirmationItem[]
 }
 
-// Manager-staff mapping
+interface SalarySlip {
+  nama: string
+  manager: string
+  totalHariKerja: number
+  gajiPokok: number
+  uangMakan: number
+  potonganTerlambat: number
+  totalLembur: number
+  totalGaji: number
+  absensi: MergedData[]
+  izin: IzinRow[]
+  lembur: LemburRow[]
+}
+
+// Staff salary configuration
+interface StaffSalary {
+  name: string
+  dailyRate: number
+  manager: string
+  jabatan: string
+  tunjanganJabatan: number
+}
+
+const DEFAULT_STAFF_SALARIES: StaffSalary[] = [
+  { name: 'Budi Suryanto', dailyRate: 150000, manager: 'Top M', jabatan: 'CEO', tunjanganJabatan: 1000000 },
+  { name: 'Mucharom Rusdiana', dailyRate: 362800, manager: 'Top M', jabatan: 'Bussiness Development Manager', tunjanganJabatan: 1000000 },
+  { name: 'Eko Prastio', dailyRate: 180500, manager: 'Widia Novitasari', jabatan: 'Production Jersey', tunjanganJabatan: 0 },
+  { name: 'Widia Novitasari', dailyRate: 196800, manager: 'Top M', jabatan: 'Manager Production', tunjanganJabatan: 800000 },
+  { name: 'Diah Ayu Fajar Cahyaningrum', dailyRate: 146000, manager: 'Top M', jabatan: 'Sales & Client Relations Manager', tunjanganJabatan: 400000 },
+  { name: 'Tri Hariyono', dailyRate: 129600, manager: 'Widia Novitasari', jabatan: 'SPV Production & QC', tunjanganJabatan: 500000 },
+  { name: 'Tata Wibowo', dailyRate: 107200, manager: 'Widia Novitasari', jabatan: 'Embordiery', tunjanganJabatan: 0 },
+  { name: 'Syaiful Anam', dailyRate: 204800, manager: 'Top M', jabatan: 'Information Systems Manager', tunjanganJabatan: 0 },
+  { name: 'M. Bagus Suryo Laksono', dailyRate: 158400, manager: 'Mucharom Rusdiana', jabatan: 'Logistic & Supply Chain Manager', tunjanganJabatan: 200000 },
+  { name: 'Achmad Baidowi', dailyRate: 115200, manager: 'Widia Novitasari', jabatan: 'Cutting Spesialist', tunjanganJabatan: 500000 },
+  { name: 'Rahmat Ragil Hidayat', dailyRate: 86400, manager: 'Mucharom Rusdiana', jabatan: 'Office General Admin', tunjanganJabatan: 250000 },
+  { name: 'Nadira Maysa Suryanto', dailyRate: 132000, manager: 'Top M', jabatan: 'Marketing & Partnerships Manager', tunjanganJabatan: 500000 },
+  { name: 'Solikatin', dailyRate: 98000, manager: 'Widia Novitasari', jabatan: 'Embordiery', tunjanganJabatan: 0 },
+  { name: 'Mita Nur Fitriani', dailyRate: 91600, manager: 'Widia Novitasari', jabatan: 'Workshop General Admin', tunjanganJabatan: 0 },
+  { name: 'Kasianto', dailyRate: 82000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0 },
+  { name: 'Rizka Maulidah', dailyRate: 100000, manager: 'Diah Ayu Fajar Cahyaningrum', jabatan: 'Sales & CS', tunjanganJabatan: 0 },
+  { name: 'Nurva Dina Amalianti', dailyRate: 60000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0 },
+  { name: 'Nadya Ambarwati Hariyanto', dailyRate: 100000, manager: 'Nadira Maysa Suryanto', jabatan: 'Digital Content Spesialist', tunjanganJabatan: 0 },
+  { name: 'Laili Nisaatus Sholihah', dailyRate: 80000, manager: 'Mucharom Rusdiana', jabatan: 'General Admin MO', tunjanganJabatan: 0 },
+  { name: 'Nabila Maulidya Putri', dailyRate: 80000, manager: 'Widia Novitasari', jabatan: 'Operator Jersey', tunjanganJabatan: 0 },
+  { name: 'Fitri Nurcomariah', dailyRate: 80000, manager: 'Mucharom Rusdiana', jabatan: 'Designer Product', tunjanganJabatan: 0 },
+  { name: 'Widodo Saputra', dailyRate: 56000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0 },
+  { name: 'Fifien Ayu Ramadhani', dailyRate: 80000, manager: 'Diah Ayu Fajar Cahyaningrum', jabatan: 'Sales & CS', tunjanganJabatan: 0 },
+  { name: 'Galuh Anjali Puspitasari', dailyRate: 80000, manager: 'Nadira Maysa Suryanto', jabatan: 'Content Creator', tunjanganJabatan: 0 },
+  { name: 'Natasha Dwi Aprilia', dailyRate: 48000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0 },
+  { name: 'Atika Permatasari', dailyRate: 68000, manager: 'Diah Ayu Fajar Cahyaningrum', jabatan: 'Sales & CS', tunjanganJabatan: 0 },
+  { name: 'Anis Munawaroh', dailyRate: 40000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0 },
+  { name: 'Azmil Qurrota A\'yun', dailyRate: 40000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0 },
+  { name: 'M Sadiq Djafaar Noeh', dailyRate: 60000, manager: 'Widia Novitasari', jabatan: 'Operator Jersey', tunjanganJabatan: 0 },
+  { name: 'Bahriyah Nurjannah', dailyRate: 150000, manager: 'Widia Novitasari', jabatan: 'Staff', tunjanganJabatan: 0 },
+  { name: 'Ade Andreans S', dailyRate: 150000, manager: 'Widia Novitasari', jabatan: 'Staff', tunjanganJabatan: 0 },
+  { name: 'Alek Sugianto', dailyRate: 150000, manager: 'Widia Novitasari', jabatan: 'Staff', tunjanganJabatan: 0 }
+]
+
+const UANG_MAKAN_PER_HARI = 12000
+const POTONGAN_TERLAMBAT = 6000
+const EDIT_PASSWORD = 'BismillahRezekiLancar99'
+const OVERTIME_RATE_PER_HOUR = 12500
+
+// Function to get overtime rate for a specific staff
+const getOvertimeRate = (nama: string): number => {
+  if (nama === 'Achmad Baidowi') {
+    // Cutting Specialist has different rate (use from CSV)
+    return 0 // Will use the CSV value
+  }
+  return OVERTIME_RATE_PER_HOUR
+}
+
+// Manager-staff mapping (will be built from staff salaries)
 const MANAGER_STAFF_MAP: { [key: string]: string } = {
   // Top M's team (managers)
   'Budi Suryanto': 'Top M',
@@ -85,7 +158,7 @@ const MANAGER_STAFF_MAP: { [key: string]: string } = {
   'Tri Hariyono': 'Widia Novitasari',
   'Tata Wibowo': 'Widia Novitasari',
   'Achmad Baidowi': 'Widia Novitasari',
-  'Titin': 'Widia Novitasari',
+  'Solikatin': 'Widia Novitasari',
   'Nabila Maulidya Putri': 'Widia Novitasari',
   'Mita Nur Fitriani': 'Widia Novitasari',
   'Kasianto': 'Widia Novitasari',
@@ -110,7 +183,6 @@ const MANAGER_STAFF_MAP: { [key: string]: string } = {
   'Ratih': 'Widia Novitasari',
   'Rizqi Pramudya Lazuardi': 'Widia Novitasari',
   'Siti Fatimah': 'Widia Novitasari',
-  'Solikatin': 'Widia Novitasari',
   'Suep': 'Widia Novitasari',
   'Sulastri': 'Widia Novitasari',
   'Sulistyorini': 'Widia Novitasari',
@@ -127,8 +199,15 @@ export default function Home() {
   const [managerGroups, setManagerGroups] = useState<ManagerGroup[]>([])
   const [activeTab, setActiveTab] = useState<string>('confirmation')
   const [expandedStaff, setExpandedStaff] = useState<string | null>(null)
-  const [step, setStep] = useState<'upload' | 'confirmation' | 'overtime-confirmation' | 'next'>('upload')
+  const [step, setStep] = useState<'upload' | 'confirmation' | 'lembur' | 'slip'>('upload')
   const [overtimeConfirmations, setOvertimeConfirmations] = useState<ConfirmationItem[]>([])
+  const [salarySlips, setSalarySlips] = useState<SalarySlip[]>([])
+  const [selectedStaff, setSelectedStaff] = useState<string | null>(null)
+  const slipRef = useRef<HTMLDivElement>(null)
+  const [isEditMode, setIsEditMode] = useState(false)
+  const [passwordInput, setPasswordInput] = useState('')
+  const [staffSalaries, setStaffSalaries] = useState<StaffSalary[]>(DEFAULT_STAFF_SALARIES)
+  const [editingStaff, setEditingStaff] = useState<StaffSalary | null>(null)
 
   const handleFileUpload = (
     file: File,
@@ -140,7 +219,24 @@ export default function Home() {
         if (type === 'absensi') {
           setAbsensiData(results.data as AbsensiRow[])
         } else if (type === 'lembur') {
-          setLemburData(results.data as LemburRow[])
+          // Recalculate Total Diterima based on overtime rate
+          const recalculatedLembur = (results.data as LemburRow[]).map(row => {
+            const jamLembur = parseFloat(row['Jam Lembur']?.toString() || '0')
+            const rate = getOvertimeRate(row.Nama)
+
+            if (rate === 0) {
+              // Use original value from CSV (for Achmad Baidowi)
+              return row
+            } else {
+              // Recalculate with standard rate
+              const totalDiterima = jamLembur * rate
+              return {
+                ...row,
+                'Total Diterima': totalDiterima.toString()
+              }
+            }
+          })
+          setLemburData(recalculatedLembur)
         } else {
           // Parse izin data - handle date range format
           const parsedIzin: IzinRow[] = []
@@ -309,34 +405,95 @@ export default function Home() {
     )
   }
 
-  const proceedToOvertimeConfirmation = () => {
-    // Group lembur data by name
-    const groupedByName: { [key: string]: LemburRow[] } = {}
+  const calculateSalarySlips = () => {
+    const slips: SalarySlip[] = []
 
-    lemburData.forEach((lembur) => {
-      if (!groupedByName[lembur.Nama]) {
-        groupedByName[lembur.Nama] = []
-      }
-      groupedByName[lembur.Nama].push(lembur)
-    })
+    // Get all unique staff names
+    const allStaffNames = new Set<string>()
+    absensiData.forEach(row => allStaffNames.add(row.Nama))
+    izinData.forEach(row => allStaffNames.add(row.Nama))
+    lemburData.forEach(row => allStaffNames.add(row.Nama))
 
-    // Create merged overtime confirmations
-    const overtimeConfs: ConfirmationItem[] = []
+    allStaffNames.forEach(nama => {
+      // Get staff data
+      const staffAbsensi = mergedData.filter(row => row.Nama === nama)
+      const staffIzin = izinData.filter(row => row.Nama === nama)
+      const staffLembur = lemburData.filter(row => row.Nama === nama)
 
-    Object.keys(groupedByName).forEach((nama) => {
-      const records = groupedByName[nama]
-      overtimeConfs.push({
-        Nama: nama,
-        Tanggal: '', // Will show multiple dates
-        Reason: '', // Not needed for merged view
-        Status: 'pending',
-        Type: 'overtime',
-        Data: records // Store all records for this person
+      // Get staff salary config
+      const staffConfig = staffSalaries.find(s => s.name === nama)
+      const gajiPerHari = staffConfig?.dailyRate || 150000
+      const manager = staffConfig?.manager || MANAGER_STAFF_MAP[nama] || 'Unknown Manager'
+
+      // Count working days (days with attendance record)
+      let totalHariKerja = 0
+      let hariMakan = 0 // Days eligible for meal allowance
+      let potonganTerlambat = 0
+
+      staffAbsensi.forEach(row => {
+        // Check if this day has izin
+        const izinOnThisDay = staffIzin.find(izin => izin.Tanggal === row.Tanggal)
+
+        if (!izinOnThisDay) {
+          // No izin = working day
+          totalHariKerja++
+          hariMakan++ // Gets meal allowance
+
+          // Check if late (and confirmed as truly late)
+          const lateConfirmation = managerGroups
+            .flatMap(g => g.confirmations)
+            .find(c => c.Nama === nama && c.Tanggal === row.Tanggal && c.Type === 'late' && c.Status === 'approved')
+
+          if (lateConfirmation) {
+            potonganTerlambat += POTONGAN_TERLAMBAT
+          }
+        } else {
+          // Has izin
+          // Check if it's sick with doctor's letter (Alasan contains "dokter" or "sakit" with letter)
+          const hasDoctorLetter = izinOnThisDay.Alasan.toLowerCase().includes('dokter') ||
+                                   izinOnThisDay.Alasan.toLowerCase().includes('surat')
+
+          if (hasDoctorLetter) {
+            // Sick with letter: gaji paid, uang makan cut
+            totalHariKerja++
+            // hariMakan not incremented
+          }
+          // else: regular izin, both gaji and uang makan cut
+        }
+      })
+
+      // Calculate lembur total
+      const totalLembur = staffLembur.reduce((sum, row) => {
+        const amount = row['Total Diterima'] ? parseFloat(row['Total Diterima'].toString().replace(/\./g, '').replace(',', '.')) : 0
+        return sum + amount
+      }, 0)
+
+      const gajiPokok = totalHariKerja * gajiPerHari
+      const uangMakan = hariMakan * UANG_MAKAN_PER_HARI
+      const tunjanganJabatan = staffConfig?.tunjanganJabatan || 0
+      const totalGaji = gajiPokok + uangMakan - potonganTerlambat + totalLembur + tunjanganJabatan
+
+      slips.push({
+        nama,
+        manager,
+        totalHariKerja,
+        gajiPokok,
+        uangMakan,
+        potonganTerlambat,
+        totalLembur,
+        totalGaji,
+        absensi: staffAbsensi,
+        izin: staffIzin,
+        lembur: staffLembur
       })
     })
 
-    setOvertimeConfirmations(overtimeConfs)
-    setStep('overtime-confirmation')
+    setSalarySlips(slips)
+    setStep('slip')
+  }
+
+  const proceedToLembur = () => {
+    setStep('lembur')
   }
 
   const handleOvertimeConfirmation = (index: number, status: 'approved' | 'rejected') => {
@@ -349,12 +506,134 @@ export default function Home() {
     return overtimeConfirmations.every((conf) => conf.Status !== 'pending')
   }
 
+  const handleBulkAction = (managerName: string, action: 'approved' | 'rejected') => {
+    const updatedGroups = managerGroups.map(group => {
+      if (group.manager === managerName) {
+        return {
+          ...group,
+          confirmations: group.confirmations.map(conf => ({
+            ...conf,
+            Status: conf.Status === 'pending' ? action : conf.Status
+          }))
+        }
+      }
+      return group
+    })
+    setManagerGroups(updatedGroups)
+  }
+
+  const downloadSlipAsImage = async (staffName: string) => {
+    if (!slipRef.current) return
+
+    try {
+      const canvas = await html2canvas(slipRef.current, {
+        scale: 2,
+        backgroundColor: '#ffffff',
+        logging: false
+      })
+
+      const link = document.createElement('a')
+      link.download = `Slip_Gaji_${staffName.replace(/\s/g, '_')}.png`
+      link.href = canvas.toDataURL('image/png')
+      link.click()
+    } catch (error) {
+      console.error('Error generating image:', error)
+      alert('Failed to download slip image')
+    }
+  }
+
+  const downloadAllSlips = async () => {
+    for (const slip of salarySlips) {
+      setSelectedStaff(slip.nama)
+      // Wait for render
+      await new Promise(resolve => setTimeout(resolve, 500))
+      await downloadSlipAsImage(slip.nama)
+      await new Promise(resolve => setTimeout(resolve, 300))
+    }
+    setSelectedStaff(null)
+  }
+
+  const handlePasswordSubmit = () => {
+    if (passwordInput === EDIT_PASSWORD) {
+      setIsEditMode(true)
+      setPasswordInput('')
+    } else {
+      alert('Password salah!')
+      setPasswordInput('')
+    }
+  }
+
+  const handleSaveStaff = () => {
+    if (!editingStaff) return
+
+    const exists = staffSalaries.find(s => s.name === editingStaff.name)
+    if (exists) {
+      // Update existing
+      setStaffSalaries(staffSalaries.map(s =>
+        s.name === editingStaff.name ? editingStaff : s
+      ))
+    } else {
+      // Add new
+      setStaffSalaries([...staffSalaries, editingStaff])
+    }
+    setEditingStaff(null)
+  }
+
+  const handleDeleteStaff = (name: string) => {
+    if (confirm(`Yakin mau hapus ${name}?`)) {
+      setStaffSalaries(staffSalaries.filter(s => s.name !== name))
+    }
+  }
+
   return (
     <div className={`min-h-screen bg-gray-50 p-8 ${step === 'upload' ? 'flex flex-col items-center justify-center' : ''}`}>
       <div className="w-full max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold text-gray-900 mb-8 text-center">Payroll360 Automation</h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-4xl font-bold text-gray-900">Payroll360 Automation</h1>
+          {step === 'upload' && !isEditMode && (
+            <button
+              onClick={() => {
+                const password = prompt('Masukkan password:')
+                if (password === EDIT_PASSWORD) {
+                  setIsEditMode(true)
+                } else if (password) {
+                  alert('Password salah!')
+                }
+              }}
+              style={{
+                backgroundColor: '#f59e0b',
+                color: 'white',
+                padding: '0.75rem 1.5rem',
+                borderRadius: '0.5rem',
+                fontWeight: 'bold',
+                fontSize: '1rem',
+                cursor: 'pointer',
+                border: 'none'
+              }}
+            >
+              ⚙️ Edit Staff Salaries
+            </button>
+          )}
+          {isEditMode && (
+            <button
+              onClick={() => setIsEditMode(false)}
+              style={{
+                backgroundColor: '#ef4444',
+                color: 'white',
+                padding: '0.75rem 1.5rem',
+                borderRadius: '0.5rem',
+                fontWeight: 'bold',
+                fontSize: '1rem',
+                cursor: 'pointer',
+                border: 'none'
+              }}
+            >
+              🔒 Lock Edit Mode
+            </button>
+          )}
+        </div>
 
-        {step === 'upload' && (
+        {step === 'upload' && !isEditMode && (
           <div className="space-y-8">
             <div className="bg-white p-12 rounded-2xl shadow-lg mx-auto max-w-6xl">
               <div className="text-center mb-16">
@@ -489,6 +768,202 @@ export default function Home() {
           </div>
         )}
 
+        {step === 'upload' && isEditMode && (
+          <div className="bg-white p-8 rounded-lg shadow-lg">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-3xl font-semibold">Edit Staff Salaries</h2>
+              <button
+                onClick={() => setEditingStaff({ name: '', dailyRate: 0, manager: 'Top M', jabatan: '', tunjanganJabatan: 0 })}
+                style={{
+                  backgroundColor: '#22c55e',
+                  color: 'white',
+                  padding: '0.75rem 1.5rem',
+                  borderRadius: '0.5rem',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  border: 'none'
+                }}
+              >
+                + Add New Staff
+              </button>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse border border-gray-200">
+                <thead>
+                  <tr className="bg-gray-700 text-white">
+                    <th className="border border-gray-200 px-4 py-3 text-left font-bold">Nama</th>
+                    <th className="border border-gray-200 px-4 py-3 text-left font-bold">Jabatan</th>
+                    <th className="border border-gray-200 px-4 py-3 text-left font-bold">Gaji Harian</th>
+                    <th className="border border-gray-200 px-4 py-3 text-left font-bold">Tunjangan Jabatan</th>
+                    <th className="border border-gray-200 px-4 py-3 text-left font-bold">Manager</th>
+                    <th className="border border-gray-200 px-4 py-3 text-center font-bold">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {staffSalaries.sort((a, b) => a.name.localeCompare(b.name)).map((staff, index) => (
+                    <tr key={index} className="hover:bg-gray-50">
+                      <td className="border border-gray-200 px-4 py-2">{staff.name}</td>
+                      <td className="border border-gray-200 px-4 py-2">{staff.jabatan}</td>
+                      <td className="border border-gray-200 px-4 py-2">Rp {staff.dailyRate.toLocaleString('id-ID')}</td>
+                      <td className="border border-gray-200 px-4 py-2">Rp {staff.tunjanganJabatan.toLocaleString('id-ID')}</td>
+                      <td className="border border-gray-200 px-4 py-2">{staff.manager}</td>
+                      <td className="border border-gray-200 px-4 py-2 text-center">
+                        <div className="flex gap-2 justify-center">
+                          <button
+                            onClick={() => setEditingStaff(staff)}
+                            style={{
+                              backgroundColor: '#3b82f6',
+                              color: 'white',
+                              padding: '0.5rem 1rem',
+                              borderRadius: '0.25rem',
+                              fontWeight: 'bold',
+                              fontSize: '0.875rem',
+                              cursor: 'pointer',
+                              border: 'none'
+                            }}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteStaff(staff.name)}
+                            style={{
+                              backgroundColor: '#ef4444',
+                              color: 'white',
+                              padding: '0.5rem 1rem',
+                              borderRadius: '0.25rem',
+                              fontWeight: 'bold',
+                              fontSize: '0.875rem',
+                              cursor: 'pointer',
+                              border: 'none'
+                            }}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Edit Modal */}
+            {editingStaff && (
+              <div style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: 'rgba(0,0,0,0.5)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 50
+              }}>
+                <div className="bg-white p-8 rounded-lg shadow-xl max-w-md w-full">
+                  <h3 className="text-2xl font-bold mb-6">{editingStaff.name ? 'Edit' : 'Add'} Staff</h3>
+
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block font-semibold mb-2">Nama:</label>
+                      <input
+                        type="text"
+                        value={editingStaff.name}
+                        onChange={(e) => setEditingStaff({...editingStaff, name: e.target.value})}
+                        className="w-full px-4 py-2 border border-gray-300 rounded"
+                        placeholder="Nama staff"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-semibold mb-2">Jabatan:</label>
+                      <input
+                        type="text"
+                        value={editingStaff.jabatan}
+                        onChange={(e) => setEditingStaff({...editingStaff, jabatan: e.target.value})}
+                        className="w-full px-4 py-2 border border-gray-300 rounded"
+                        placeholder="e.g. Production Helper"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-semibold mb-2">Gaji Harian:</label>
+                      <input
+                        type="number"
+                        value={editingStaff.dailyRate}
+                        onChange={(e) => setEditingStaff({...editingStaff, dailyRate: parseInt(e.target.value) || 0})}
+                        className="w-full px-4 py-2 border border-gray-300 rounded"
+                        placeholder="150000"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-semibold mb-2">Tunjangan Jabatan:</label>
+                      <input
+                        type="number"
+                        value={editingStaff.tunjanganJabatan}
+                        onChange={(e) => setEditingStaff({...editingStaff, tunjanganJabatan: parseInt(e.target.value) || 0})}
+                        className="w-full px-4 py-2 border border-gray-300 rounded"
+                        placeholder="0"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-semibold mb-2">Manager:</label>
+                      <select
+                        value={editingStaff.manager}
+                        onChange={(e) => setEditingStaff({...editingStaff, manager: e.target.value})}
+                        className="w-full px-4 py-2 border border-gray-300 rounded"
+                      >
+                        <option value="Top M">Top M</option>
+                        <option value="Mucharom Rusdiana">Mucharom Rusdiana</option>
+                        <option value="Nadira Maysa Suryanto">Nadira Maysa Suryanto</option>
+                        <option value="Diah Ayu Fajar Cahyaningrum">Diah Ayu Fajar Cahyaningrum</option>
+                        <option value="Widia Novitasari">Widia Novitasari</option>
+                      </select>
+                    </div>
+
+                    <div className="flex gap-3 mt-6">
+                      <button
+                        onClick={handleSaveStaff}
+                        style={{
+                          backgroundColor: '#22c55e',
+                          color: 'white',
+                          padding: '0.75rem 1.5rem',
+                          borderRadius: '0.5rem',
+                          fontWeight: 'bold',
+                          cursor: 'pointer',
+                          border: 'none',
+                          flex: 1
+                        }}
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={() => setEditingStaff(null)}
+                        style={{
+                          backgroundColor: '#6b7280',
+                          color: 'white',
+                          padding: '0.75rem 1.5rem',
+                          borderRadius: '0.5rem',
+                          fontWeight: 'bold',
+                          cursor: 'pointer',
+                          border: 'none',
+                          flex: 1
+                        }}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {step === 'confirmation' && (
           <div className="space-y-4">
             <h2 className="text-2xl font-semibold mb-4">Review & Confirm</h2>
@@ -532,7 +1007,41 @@ export default function Home() {
                     {managerGroups.map((group, groupIndex) => (
                       group.confirmations.length > 0 && (
                         <div key={groupIndex}>
-                          <h3 className="font-bold text-lg mb-2 text-gray-800">{group.manager}</h3>
+                          <div className="flex justify-between items-center mb-2">
+                            <h3 className="font-bold text-lg text-gray-800">{group.manager}</h3>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => handleBulkAction(group.manager, 'approved')}
+                                style={{
+                                  backgroundColor: '#22c55e',
+                                  color: 'white',
+                                  padding: '0.5rem 1rem',
+                                  borderRadius: '0.5rem',
+                                  fontWeight: 'bold',
+                                  fontSize: '0.875rem',
+                                  cursor: 'pointer',
+                                  border: 'none'
+                                }}
+                              >
+                                ✓ Approve All
+                              </button>
+                              <button
+                                onClick={() => handleBulkAction(group.manager, 'rejected')}
+                                style={{
+                                  backgroundColor: '#ef4444',
+                                  color: 'white',
+                                  padding: '0.5rem 1rem',
+                                  borderRadius: '0.5rem',
+                                  fontWeight: 'bold',
+                                  fontSize: '0.875rem',
+                                  cursor: 'pointer',
+                                  border: 'none'
+                                }}
+                              >
+                                ✗ Reject All
+                              </button>
+                            </div>
+                          </div>
                           <div className="overflow-x-auto">
                             <table className="w-full border-collapse border border-gray-200">
                               <thead>
@@ -636,7 +1145,7 @@ export default function Home() {
             </div>
 
             <button
-              onClick={proceedToOvertimeConfirmation}
+              onClick={proceedToLembur}
               disabled={!allConfirmationsProcessed()}
               style={{
                 backgroundColor: !allConfirmationsProcessed() ? '#9ca3af' : '#16a34a',
@@ -656,113 +1165,487 @@ export default function Home() {
           </div>
         )}
 
-        {step === 'overtime-confirmation' && (
+        {step === 'lembur' && (
           <div className="space-y-4">
-            <h2 className="text-2xl font-semibold mb-4">Overtime Confirmation</h2>
+            <h2 className="text-2xl font-semibold mb-4">Overtime (Lembur) Data</h2>
 
             <div className="bg-white rounded-lg shadow overflow-hidden p-6">
-              <h3 className="font-bold text-lg mb-4 text-gray-800">Crosscheck Overtime (Lembur) Records</h3>
+              <h3 className="font-bold text-lg mb-4 text-gray-800">Review Overtime Records</h3>
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse border border-gray-200">
                   <thead>
                     <tr className="bg-gray-100">
                       <th className="border border-gray-200 px-3 py-2 text-left font-bold text-sm">Nama</th>
                       <th className="border border-gray-200 px-3 py-2 text-left font-bold text-sm">Tanggal</th>
+                      <th className="border border-gray-200 px-3 py-2 text-left font-bold text-sm">Jam Mulai</th>
+                      <th className="border border-gray-200 px-3 py-2 text-left font-bold text-sm">Jam Selesai</th>
                       <th className="border border-gray-200 px-3 py-2 text-left font-bold text-sm">Jam Lembur</th>
-                      <th className="border border-gray-200 px-3 py-2 text-left font-bold text-sm">Durasi Lembur</th>
                       <th className="border border-gray-200 px-3 py-2 text-left font-bold text-sm">Total Diterima</th>
-                      <th className="border border-gray-200 px-3 py-2 text-center font-bold text-sm w-24">Action</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {overtimeConfirmations.map((conf, index) => {
-                      const records = conf.Data as LemburRow[]
-                      const totalHours = records.reduce((sum, r) => sum + parseFloat(r['Jam Lembur'].toString().replace(',', '.')), 0)
-                      const totalAmount = records.reduce((sum, r) => {
-                        const amount = r['Total Diterima'] ? parseFloat(r['Total Diterima'].toString().replace(/\./g, '').replace(',', '.')) : 0
-                        return sum + amount
-                      }, 0)
-
-                      return (
-                        <tr key={index} className={
-                          conf.Status === 'approved' ? 'bg-green-50' :
-                          conf.Status === 'rejected' ? 'bg-red-50' : 'bg-white'
-                        }>
-                          <td className="border border-gray-200 px-3 py-2 text-xs font-semibold">{conf.Nama}</td>
-                          <td className="border border-gray-200 px-3 py-2 text-xs">
-                            {records.map((r, i) => (
-                              <div key={i}>{r.Tanggal}</div>
-                            ))}
-                          </td>
-                          <td className="border border-gray-200 px-3 py-2 text-xs">
-                            {records.map((r, i) => (
-                              <div key={i}>{r['Jam Mulai']} - {r['Jam Selesai']}</div>
-                            ))}
-                          </td>
-                          <td className="border border-gray-200 px-3 py-2 text-xs">
-                            {records.map((r, i) => (
-                              <div key={i}>{r['Jam Lembur']} jam</div>
-                            ))}
-                            <div className="font-bold mt-1 pt-1 border-t border-gray-300">Total: {totalHours.toFixed(2)} jam</div>
-                          </td>
-                          <td className="border border-gray-200 px-3 py-2 text-xs">
-                            {records.map((r, i) => (
-                              <div key={i}>Rp {parseFloat(r['Total Diterima']?.toString().replace(/\./g, '').replace(',', '.') || '0').toLocaleString('id-ID')}</div>
-                            ))}
-                            <div className="font-bold mt-1 pt-1 border-t border-gray-300">Rp {totalAmount.toLocaleString('id-ID')}</div>
-                          </td>
-                          <td className="border border-gray-200 px-3 py-2">
-                            <div className="flex gap-2 justify-center">
-                              <button
-                                onClick={() => handleOvertimeConfirmation(index, 'approved')}
-                                disabled={conf.Status !== 'pending'}
-                                className="text-green-600 hover:text-green-800 disabled:text-gray-400 text-lg font-bold"
-                              >
-                                ✓
-                              </button>
-                              <button
-                                onClick={() => handleOvertimeConfirmation(index, 'rejected')}
-                                disabled={conf.Status !== 'pending'}
-                                className="text-red-600 hover:text-red-800 disabled:text-gray-400 text-lg font-bold"
-                              >
-                                ✗
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      )
-                    })}
+                    {lemburData.map((row, index) => (
+                      <tr key={index} className="bg-white hover:bg-gray-50">
+                        <td className="border border-gray-200 px-3 py-2 text-xs font-semibold">{row.Nama}</td>
+                        <td className="border border-gray-200 px-3 py-2 text-xs">{row.Tanggal}</td>
+                        <td className="border border-gray-200 px-3 py-2 text-xs">{row['Jam Mulai']}</td>
+                        <td className="border border-gray-200 px-3 py-2 text-xs">{row['Jam Selesai']}</td>
+                        <td className="border border-gray-200 px-3 py-2 text-xs">{row['Jam Lembur']} jam</td>
+                        <td className="border border-gray-200 px-3 py-2 text-xs">
+                          Rp {parseFloat(row['Total Diterima']?.toString().replace(/\./g, '').replace(',', '.') || '0').toLocaleString('id-ID')}
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
 
               <button
-                onClick={() => setStep('next')}
-                disabled={!allOvertimeConfirmationsProcessed()}
+                onClick={calculateSalarySlips}
                 style={{
-                  backgroundColor: !allOvertimeConfirmationsProcessed() ? '#9ca3af' : '#16a34a',
+                  backgroundColor: '#16a34a',
                   color: 'white',
                   padding: '1rem 3rem',
                   borderRadius: '0.75rem',
                   fontWeight: 'bold',
                   fontSize: '1.125rem',
-                  cursor: !allOvertimeConfirmationsProcessed() ? 'not-allowed' : 'pointer',
+                  cursor: 'pointer',
                   border: 'none',
                   boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
                   transition: 'all 0.2s',
                   marginTop: '1.5rem'
                 }}
               >
-                Complete Processing
+                Process Salary Slips
               </button>
             </div>
           </div>
         )}
 
-        {step === 'next' && (
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-2xl font-semibold mb-4">All Confirmations Processed!</h2>
-            <p className="text-gray-600">You can now proceed to the next step of payroll processing.</p>
+        {step === 'slip' && !selectedStaff && (
+          <div className="space-y-4">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-3xl font-semibold">Salary Slips</h2>
+              <button
+                onClick={downloadAllSlips}
+                style={{
+                  backgroundColor: '#2563eb',
+                  color: 'white',
+                  padding: '0.75rem 1.5rem',
+                  borderRadius: '0.5rem',
+                  fontWeight: 'bold',
+                  fontSize: '1rem',
+                  cursor: 'pointer',
+                  border: 'none',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                }}
+              >
+                📥 Download All Slips
+              </button>
+            </div>
+
+            {/* Tabs */}
+            <div className="flex gap-3 border-b-2 border-gray-200 pb-2 overflow-x-auto">
+              {['Top M', 'Diah Ayu Fajar Cahyaningrum', 'Mucharom Rusdiana', 'Nadira Maysa Suryanto', 'Widia Novitasari'].map(manager => {
+                const staffCount = salarySlips.filter(s => s.manager === manager).length
+                if (staffCount === 0) return null
+                return (
+                  <button
+                    key={manager}
+                    onClick={() => setActiveTab(manager)}
+                    className={`px-6 py-3 font-bold text-lg whitespace-nowrap transition-colors ${
+                      activeTab === manager
+                        ? 'border-b-4 border-blue-500 text-blue-600'
+                        : 'text-gray-600 hover:text-blue-500'
+                    }`}
+                  >
+                    {manager}
+                  </button>
+                )
+              })}
+            </div>
+
+            {/* Staff Grid */}
+            <div className="grid grid-cols-4" style={{ gap: '1.5rem' }}>
+              {salarySlips
+                .filter(slip => slip.manager === activeTab)
+                .sort((a, b) => a.nama.localeCompare(b.nama))
+                .map((slip) => (
+                  <div
+                    key={slip.nama}
+                    onClick={() => setSelectedStaff(slip.nama)}
+                    className="bg-white p-4 rounded-lg shadow hover:shadow-lg cursor-pointer transition-shadow border-2 border-gray-100 hover:border-blue-300"
+                  >
+                    <h3 className="font-bold text-base text-gray-800 mb-2">{slip.nama}</h3>
+                    <div className="text-sm space-y-1">
+                      <p className="text-gray-600">Total: <span className="font-bold text-green-600">Rp {slip.totalGaji.toLocaleString('id-ID')}</span></p>
+                      <p className="text-xs text-gray-500">Click to view details</p>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+        )}
+
+        {step === 'slip' && selectedStaff && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => setSelectedStaff(null)}
+                  style={{
+                    backgroundColor: '#6b7280',
+                    color: 'white',
+                    padding: '0.75rem 1.5rem',
+                    borderRadius: '0.5rem',
+                    fontWeight: 'bold',
+                    fontSize: '1rem',
+                    cursor: 'pointer',
+                    border: 'none'
+                  }}
+                >
+                  ← Back
+                </button>
+                <h2 className="text-3xl font-semibold">Slip Gaji - {selectedStaff}</h2>
+              </div>
+              <button
+                onClick={() => downloadSlipAsImage(selectedStaff)}
+                style={{
+                  backgroundColor: '#22c55e',
+                  color: 'white',
+                  padding: '0.75rem 1.5rem',
+                  borderRadius: '0.5rem',
+                  fontWeight: 'bold',
+                  fontSize: '1rem',
+                  cursor: 'pointer',
+                  border: 'none',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                }}
+              >
+                📥 Download Slip
+              </button>
+            </div>
+
+            {(() => {
+              const slip = salarySlips.find(s => s.nama === selectedStaff)
+              if (!slip) return null
+
+              const hariMakan = slip.uangMakan / UANG_MAKAN_PER_HARI
+              const staffConfig = staffSalaries.find(s => s.name === slip.nama)
+
+              return (
+                <div className="space-y-6">
+                  {/* Salary Slip */}
+                  <div ref={slipRef} className="bg-white p-8 rounded-lg shadow-lg border-4 border-black max-w-[1200px] mx-auto">
+                    {/* Header */}
+                    <div className="flex justify-between items-start mb-6 pb-4 border-b-4 border-black">
+                      <div>
+                        <h1 className="text-2xl font-bold mb-1">VIDO GARMENT</h1>
+                        <p className="text-xs">Jl. Sidosermo IV Gg. No.37, Surabaya</p>
+                      </div>
+                      <div className="text-right">
+                        <h2 className="text-3xl font-bold text-gray-700">FABRRIK GROUP</h2>
+                      </div>
+                    </div>
+
+                    <h2 className="text-center text-2xl font-bold mb-6">SLIP GAJI KARYAWAN</h2>
+
+                    <div className="grid grid-cols-2 gap-8 mb-6">
+                      {/* Left Column - Basic Info & Salary Breakdown */}
+                      <div>
+                        {/* Employee Info */}
+                        <div className="space-y-1 mb-6 text-sm">
+                          <div className="flex">
+                            <span className="w-32 font-semibold">Bulan</span>
+                            <span>: {new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long' })}</span>
+                          </div>
+                          <div className="flex">
+                            <span className="w-32 font-semibold">Nama</span>
+                            <span>: {slip.nama}</span>
+                          </div>
+                          <div className="flex">
+                            <span className="w-32 font-semibold">Jabatan</span>
+                            <span>: {staffConfig?.jabatan || '-'}</span>
+                          </div>
+                        </div>
+
+                        {/* Penghasilan & Potongan */}
+                        <div className="grid grid-cols-2 gap-4 mb-4">
+                          {/* Penghasilan */}
+                          <div>
+                            <h3 className="font-bold mb-2 text-sm">Penghasilan</h3>
+                            <div className="space-y-1 text-xs">
+                              <div className="flex justify-between">
+                                <span>Gaji</span>
+                                <div className="flex items-center gap-1">
+                                  <span className="text-[10px]">Rp</span>
+                                  <span className="font-semibold">{slip.gajiPokok.toLocaleString('id-ID')}</span>
+                                </div>
+                              </div>
+                              <div className="flex justify-between">
+                                <span>Lembur</span>
+                                <div className="flex items-center gap-1">
+                                  <span className="text-[10px]">Rp</span>
+                                  <span className="font-semibold">{slip.totalLembur.toLocaleString('id-ID')}</span>
+                                </div>
+                              </div>
+                              <div className="flex justify-between">
+                                <span>Tunjangan Jabatan</span>
+                                <div className="flex items-center gap-1">
+                                  <span className="text-[10px]">Rp</span>
+                                  <span className="font-semibold">{(staffConfig?.tunjanganJabatan || 0).toLocaleString('id-ID')}</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Potongan */}
+                          <div>
+                            <h3 className="font-bold mb-2 text-sm">Potongan</h3>
+                            <div className="space-y-1 text-xs">
+                              <div className="flex justify-between">
+                                <span>Pinjaman</span>
+                                <div className="flex items-center gap-1">
+                                  <span className="text-[10px]">Rp</span>
+                                  <span className="font-semibold">-</span>
+                                </div>
+                              </div>
+                              <div className="flex justify-between">
+                                <span>Keterlambatan</span>
+                                <div className="flex items-center gap-1">
+                                  <span className="text-[10px]">Rp</span>
+                                  <span className="font-semibold">{slip.potonganTerlambat.toLocaleString('id-ID')}</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Uang Makan Box */}
+                        <div className="border-2 border-black p-2 mb-4 inline-block">
+                          <div className="flex items-center gap-2 text-xs">
+                            <span className="bg-yellow-200 px-2 py-1 font-bold">Uang Makan</span>
+                            <span className="font-bold">= {hariMakan} x Rp 12.000 =</span>
+                            <span className="font-bold">{slip.uangMakan.toLocaleString('id-ID')}</span>
+                          </div>
+                        </div>
+
+                        {/* Totals */}
+                        <div className="space-y-1 text-sm mb-2">
+                          <div className="flex justify-between">
+                            <span className="font-bold">Total</span>
+                            <div className="flex items-center gap-1">
+                              <span className="text-[10px]">Rp</span>
+                              <span className="font-bold">{(slip.gajiPokok + slip.totalLembur + slip.uangMakan + (staffConfig?.tunjanganJabatan || 0)).toLocaleString('id-ID')}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Penerimaan Boxes */}
+                        <div className="space-y-2 mt-4">
+                          <div className="border-2 border-black p-2 text-center">
+                            <div className="flex justify-between items-center">
+                              <span className="font-bold text-sm">Penerimaan Bersih =</span>
+                              <div className="flex items-center gap-1">
+                                <span className="text-xs">Rp</span>
+                                <span className="font-bold text-lg">{slip.totalGaji.toLocaleString('id-ID')}</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="border-2 border-black p-2 text-center">
+                            <div className="flex justify-between items-center">
+                              <span className="font-bold text-sm">Penerimaan Transfer =</span>
+                              <div className="flex items-center gap-1">
+                                <span className="text-xs">Rp</span>
+                                <span className="font-bold text-lg">{slip.totalGaji.toLocaleString('id-ID')}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="text-right mt-6 text-xs">
+                          <p>Surabaya, {new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
+                          <p className="mt-1">Direktur</p>
+                          <p className="mt-8 font-bold">Budi Suryanto</p>
+                        </div>
+                      </div>
+
+                      {/* Right Column - Tables */}
+                      <div className="space-y-4">
+                        {/* Lembur Table */}
+                        <div>
+                          <div className="border-2 border-black p-1 mb-1 inline-block bg-yellow-200">
+                            <span className="font-bold text-xs">Uang Makan = {hariMakan} x Rp 12.000 = {slip.uangMakan.toLocaleString('id-ID')}</span>
+                          </div>
+                          <h3 className="font-bold text-sm mb-2">DAFTAR LEMBUR {slip.nama.toUpperCase()}</h3>
+                          <p className="text-xs mb-2">{new Date().toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}</p>
+                          <div className="overflow-auto max-h-[300px] border border-black">
+                            <table className="w-full border-collapse text-[10px]">
+                              <thead className="bg-gray-100 sticky top-0">
+                                <tr>
+                                  <th className="border border-black px-1 py-1">Tanggal<br/>Rincian<br/>Lembur</th>
+                                  <th className="border border-black px-1 py-1">Masuk<br/>Mulai</th>
+                                  <th className="border border-black px-1 py-1">Total<br/>Jam</th>
+                                  <th className="border border-black px-1 py-1">Rp / Jam</th>
+                                  <th className="border border-black px-1 py-1">Total</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {slip.lembur.map((l, i) => {
+                                  const totalDiterimaStr = l['Total Diterima']?.toString() || '0'
+                                  const totalDiterima = parseFloat(totalDiterimaStr.replace(/\./g, '').replace(',', '.'))
+                                  const jamLembur = parseFloat(l['Jam Lembur']?.toString() || '0')
+                                  const rpPerJam = jamLembur > 0 ? Math.round(totalDiterima / jamLembur) : 0
+                                  return (
+                                    <tr key={i} className="hover:bg-gray-50">
+                                      <td className="border border-black px-1 py-1">{l.Tanggal}</td>
+                                      <td className="border border-black px-1 py-1 text-center">{l['Jam Mulai']}</td>
+                                      <td className="border border-black px-1 py-1 text-center">{jamLembur}</td>
+                                      <td className="border border-black px-1 py-1 text-right">{rpPerJam.toLocaleString('id-ID')}</td>
+                                      <td className="border border-black px-1 py-1 text-right">{Math.round(totalDiterima).toLocaleString('id-ID')}</td>
+                                    </tr>
+                                  )
+                                })}
+                                {slip.lembur.length > 0 && (
+                                  <tr className="bg-gray-200 font-bold">
+                                    <td colSpan={2} className="border border-black px-1 py-1">Total</td>
+                                    <td className="border border-black px-1 py-1 text-center">
+                                      {slip.lembur.reduce((sum, l) => sum + parseFloat(l['Jam Lembur'].toString()), 0).toFixed(2)}
+                                    </td>
+                                    <td className="border border-black px-1 py-1"></td>
+                                    <td className="border border-black px-1 py-1 text-right">{slip.totalLembur.toLocaleString('id-ID')}</td>
+                                  </tr>
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+
+                        {/* Absensi Table */}
+                        <div>
+                          <h3 className="font-bold text-sm mb-2">ABSENSI {slip.nama.toUpperCase()}</h3>
+                          <p className="text-xs mb-2">{new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
+                          <div className="overflow-auto max-h-[300px] border border-black">
+                            <table className="w-full border-collapse text-[10px]">
+                              <thead className="bg-gray-100 sticky top-0">
+                                <tr>
+                                  <th className="border border-black px-1 py-1">Nama</th>
+                                  <th className="border border-black px-1 py-1">Shift</th>
+                                  <th className="border border-black px-1 py-1">Masuk</th>
+                                  <th className="border border-black px-1 py-1">Pulang</th>
+                                  <th className="border border-black px-1 py-1">Rincian</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {slip.absensi.map((row, i) => (
+                                  <tr key={i} className={`hover:bg-gray-50 ${row.Izin.toLowerCase().includes('libur') ? 'bg-red-100' : row.Terlambat !== '00:00' ? 'bg-yellow-100' : ''}`}>
+                                    <td className="border border-black px-1 py-1 font-semibold">{slip.nama.split(' ')[0]}</td>
+                                    <td className="border border-black px-1 py-1 text-center">{row.Tanggal}</td>
+                                    <td className="border border-black px-1 py-1 text-center">{row.Masuk}</td>
+                                    <td className="border border-black px-1 py-1 text-center">{row.Pulang}</td>
+                                    <td className="border border-black px-1 py-1 text-center">{row.Izin || (row.Terlambat !== '00:00' ? row.Terlambat : '')}</td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Data Tables Side by Side */}
+                  <div className="grid grid-cols-2 gap-6">
+                    {/* Absensi Table */}
+                    {slip.absensi.length > 0 && (
+                      <div className="bg-white p-6 rounded-lg shadow">
+                        <h3 className="font-bold text-xl mb-4 text-gray-800">Data Absensi</h3>
+                        <div className="overflow-x-auto">
+                          <table className="w-full border-collapse border border-gray-200 text-sm">
+                            <thead>
+                              <tr className="bg-gray-100">
+                                <th className="border border-gray-200 px-2 py-2 text-left font-bold text-xs">Tanggal</th>
+                                <th className="border border-gray-200 px-2 py-2 text-left font-bold text-xs">Masuk</th>
+                                <th className="border border-gray-200 px-2 py-2 text-left font-bold text-xs">Pulang</th>
+                                <th className="border border-gray-200 px-2 py-2 text-left font-bold text-xs">Terlambat</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {slip.absensi.map((row, i) => (
+                                <tr key={i} className="hover:bg-gray-50">
+                                  <td className="border border-gray-200 px-2 py-1 text-xs">{row.Tanggal}</td>
+                                  <td className="border border-gray-200 px-2 py-1 text-xs">{row.Masuk}</td>
+                                  <td className="border border-gray-200 px-2 py-1 text-xs">{row.Pulang}</td>
+                                  <td className="border border-gray-200 px-2 py-1 text-xs">{row.Terlambat}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Izin Table */}
+                    {slip.izin.length > 0 && (
+                      <div className="bg-white p-6 rounded-lg shadow">
+                        <h3 className="font-bold text-xl mb-4 text-gray-800">Data Izin</h3>
+                        <div className="overflow-x-auto">
+                          <table className="w-full border-collapse border border-gray-200 text-sm">
+                            <thead>
+                              <tr className="bg-gray-100">
+                                <th className="border border-gray-200 px-2 py-2 text-left font-bold text-xs">Tanggal</th>
+                                <th className="border border-gray-200 px-2 py-2 text-left font-bold text-xs">Alasan</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {slip.izin.map((row, i) => (
+                                <tr key={i} className="hover:bg-gray-50">
+                                  <td className="border border-gray-200 px-2 py-1 text-xs">{row.Tanggal}</td>
+                                  <td className="border border-gray-200 px-2 py-1 text-xs">{row.Alasan}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Lembur Table Full Width */}
+                  {slip.lembur.length > 0 && (
+                    <div className="bg-white p-6 rounded-lg shadow">
+                      <h3 className="font-bold text-xl mb-4 text-gray-800">Data Lembur</h3>
+                      <div className="overflow-x-auto">
+                        <table className="w-full border-collapse border border-gray-200 text-sm">
+                          <thead>
+                            <tr className="bg-gray-100">
+                              <th className="border border-gray-200 px-3 py-2 text-left font-bold">Tanggal</th>
+                              <th className="border border-gray-200 px-3 py-2 text-left font-bold">Jam Mulai</th>
+                              <th className="border border-gray-200 px-3 py-2 text-left font-bold">Jam Selesai</th>
+                              <th className="border border-gray-200 px-3 py-2 text-left font-bold">Jam Lembur</th>
+                              <th className="border border-gray-200 px-3 py-2 text-left font-bold">Total Diterima</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {slip.lembur.map((row, i) => (
+                              <tr key={i} className="hover:bg-gray-50">
+                                <td className="border border-gray-200 px-3 py-2">{row.Tanggal}</td>
+                                <td className="border border-gray-200 px-3 py-2">{row['Jam Mulai']}</td>
+                                <td className="border border-gray-200 px-3 py-2">{row['Jam Selesai']}</td>
+                                <td className="border border-gray-200 px-3 py-2">{row['Jam Lembur']} jam</td>
+                                <td className="border border-gray-200 px-3 py-2">
+                                  Rp {parseFloat(row['Total Diterima']?.toString().replace(/\./g, '').replace(',', '.') || '0').toLocaleString('id-ID')}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )
+            })()}
           </div>
         )}
       </div>
