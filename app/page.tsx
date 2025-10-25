@@ -134,11 +134,15 @@ const isManager = (jabatan: string): boolean => {
   return managerKeywords.some(keyword => jabatan.includes(keyword))
 }
 
-// Function to check if checkout time is 17:00 or earlier
+// Function to check if checkout time is before 17:00 (17:00 is OK, before 17:00 is cut)
 const isEarlyCheckout = (pulangTime: string): boolean => {
   if (!pulangTime || pulangTime === '00:00') return false
-  const [hour] = pulangTime.split(':').map(Number)
-  return hour <= 17
+  const [hour, minute] = pulangTime.split(':').map(Number)
+  // Cut uang makan only if checkout before 17:00
+  // 17:00 or later is OK
+  if (hour < 17) return true
+  if (hour === 17 && minute === 0) return false // 17:00 exact is OK
+  return false // 17:01 or later is OK
 }
 
 // Function to check if late 1 hour or more
