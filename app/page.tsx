@@ -466,10 +466,6 @@ export default function Home() {
           // Automatic uang makan cut: late >= 1 hour OR checkout <= 17:00
           if (isLateOneHourOrMore(row.Terlambat) || isEarlyCheckout(row.Pulang)) {
             eligibleForMakan = false
-            // Still deduct Rp 6000 for being late
-            if (isLateOneHourOrMore(row.Terlambat)) {
-              potonganTerlambat += POTONGAN_TERLAMBAT
-            }
           }
 
           if (eligibleForMakan) {
