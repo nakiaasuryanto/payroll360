@@ -363,20 +363,8 @@ export default function Home() {
       }
       staff.data.push(data)
 
-      // Check for confirmations needed
-      // 1. If terlambat is not "00:00"
-      if (data.Terlambat !== '00:00') {
-        groups[manager].confirmations.push({
-          Nama: data.Nama,
-          Tanggal: data.Tanggal,
-          Reason: `Terlambat: ${data.Terlambat}`,
-          Status: 'pending',
-          Type: 'late',
-          Data: data
-        })
-      }
-
-      // 2. If no masuk or pulang but no izin
+      // No need for late confirmations anymore
+      // Only track missing attendance without izin for reference
       if ((!data.Masuk || !data.Pulang) && !data.Izin) {
         groups[manager].confirmations.push({
           Nama: data.Nama,
@@ -406,7 +394,16 @@ export default function Home() {
     })
 
     setManagerGroups(sortedGroups)
-    setStep('confirmation')
+
+    // Check if there are any confirmations needed
+    const hasConfirmations = sortedGroups.some(group => group.confirmations.length > 0)
+
+    // Skip confirmation step if no confirmations needed (no late confirmations anymore)
+    if (!hasConfirmations) {
+      setStep('lembur')
+    } else {
+      setStep('confirmation')
+    }
   }
 
   const handleConfirmation = (
