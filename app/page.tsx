@@ -128,6 +128,26 @@ const getOvertimeRate = (nama: string): number => {
   return OVERTIME_RATE_PER_HOUR
 }
 
+// Function to check if staff is a manager
+const isManager = (jabatan: string): boolean => {
+  const managerKeywords = ['Manager', 'CEO', 'SPV']
+  return managerKeywords.some(keyword => jabatan.includes(keyword))
+}
+
+// Function to check if checkout time is 17:00 or earlier
+const isEarlyCheckout = (pulangTime: string): boolean => {
+  if (!pulangTime || pulangTime === '00:00') return false
+  const [hour] = pulangTime.split(':').map(Number)
+  return hour <= 17
+}
+
+// Function to check if late 1 hour or more
+const isLateOneHourOrMore = (terlambatTime: string): boolean => {
+  if (!terlambatTime || terlambatTime === '00:00') return false
+  const [hour, minute] = terlambatTime.split(':').map(Number)
+  return hour >= 1 || (hour === 0 && minute >= 60)
+}
+
 // Manager-staff mapping (will be built from staff salaries)
 const MANAGER_STAFF_MAP: { [key: string]: string } = {
   // Top M's team (managers)
@@ -430,6 +450,8 @@ export default function Home() {
       let hariMakan = 0 // Days eligible for meal allowance
       let potonganTerlambat = 0
 
+      const isStaffManager = isManager(staffConfig?.jabatan || '')
+
       staffAbsensi.forEach(row => {
         // Check if this day has izin
         const izinOnThisDay = staffIzin.find(izin => izin.Tanggal === row.Tanggal)
@@ -437,15 +459,21 @@ export default function Home() {
         if (!izinOnThisDay) {
           // No izin = working day
           totalHariKerja++
-          hariMakan++ // Gets meal allowance
 
-          // Check if late (and confirmed as truly late)
-          const lateConfirmation = managerGroups
-            .flatMap(g => g.confirmations)
-            .find(c => c.Nama === nama && c.Tanggal === row.Tanggal && c.Type === 'late' && c.Status === 'approved')
+          // Check uang makan eligibility
+          let eligibleForMakan = true
 
-          if (lateConfirmation) {
-            potonganTerlambat += POTONGAN_TERLAMBAT
+          // Automatic uang makan cut: late >= 1 hour OR checkout <= 17:00
+          if (isLateOneHourOrMore(row.Terlambat) || isEarlyCheckout(row.Pulang)) {
+            eligibleForMakan = false
+            // Still deduct Rp 6000 for being late
+            if (isLateOneHourOrMore(row.Terlambat)) {
+              potonganTerlambat += POTONGAN_TERLAMBAT
+            }
+          }
+
+          if (eligibleForMakan) {
+            hariMakan++
           }
         } else {
           // Has izin
@@ -456,9 +484,13 @@ export default function Home() {
           if (hasDoctorLetter) {
             // Sick with letter: gaji paid, uang makan cut
             totalHariKerja++
-            // hariMakan not incremented
+            // Managers still get uang makan even with doctor's letter
+            if (isStaffManager) {
+              hariMakan++
+            }
+            // hariMakan not incremented for non-managers
           }
-          // else: regular izin, both gaji and uang makan cut
+          // else: regular izin, both gaji and uang makan cut (including managers)
         }
       })
 
