@@ -475,15 +475,21 @@ export default function Home() {
                                    izinOnThisDay.Alasan.toLowerCase().includes('surat')
 
           if (hasDoctorLetter) {
-            // Sick with letter: gaji paid, uang makan cut
+            // Sick with letter: gaji paid
             totalHariKerja++
-            // Managers still get uang makan even with doctor's letter
+            // Managers get uang makan even when not masuk
             if (isStaffManager) {
               hariMakan++
             }
             // hariMakan not incremented for non-managers
+          } else {
+            // Regular izin (not sick with letter)
+            // Managers still get uang makan even when not masuk
+            if (isStaffManager) {
+              hariMakan++
+            }
+            // Non-managers: both gaji and uang makan cut
           }
-          // else: regular izin, both gaji and uang makan cut (including managers)
         }
       })
 
@@ -1133,32 +1139,37 @@ export default function Home() {
                           {/* Staff Table (shown when expanded) */}
                           {expandedStaff === staff.name && (
                             <div className="overflow-x-auto">
-                              <table className="w-full border-collapse">
-                                <thead>
-                                  <tr className="bg-gray-100">
-                                    <th className="border-b border-gray-200 px-2 py-2 text-left text-xs font-bold">Tanggal</th>
-                                    <th className="border-b border-gray-200 px-2 py-2 text-left text-xs font-bold">Masuk</th>
-                                    <th className="border-b border-gray-200 px-2 py-2 text-left text-xs font-bold">Pulang</th>
-                                    <th className="border-b border-gray-200 px-2 py-2 text-left text-xs font-bold">Terlambat</th>
-                                    <th className="border-b border-gray-200 px-2 py-2 text-left text-xs font-bold">Jam</th>
-                                    <th className="border-b border-gray-200 px-2 py-2 text-left text-xs font-bold">Izin</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  {staff.data.map((row, rowIndex) => (
-                                    <tr key={rowIndex} className="bg-white hover:bg-gray-50">
-                                      <td className="border-b border-gray-100 px-2 py-1.5 text-[11px]">{row.Tanggal}</td>
-                                      <td className="border-b border-gray-100 px-2 py-1.5 text-[11px]">{row.Masuk}</td>
-                                      <td className="border-b border-gray-100 px-2 py-1.5 text-[11px]">{row.Pulang}</td>
-                                      <td className={`border-b border-gray-100 px-2 py-1.5 text-[11px] ${row.Terlambat !== '00:00' ? 'text-red-600 font-semibold' : ''}`}>
-                                        {row.Terlambat}
-                                      </td>
-                                      <td className="border-b border-gray-100 px-2 py-1.5 text-[11px]">{row['Jam Kerja']}</td>
-                                      <td className="border-b border-gray-100 px-2 py-1.5 text-[11px] truncate" title={row.Izin}>{row.Izin}</td>
-                                    </tr>
-                                  ))}
-                                </tbody>
-                              </table>
+                              {(() => {
+                                const hasIzin = staff.data.some(row => row.Izin && row.Izin.trim() !== '')
+                                return (
+                                  <table className="w-full border-collapse">
+                                    <thead>
+                                      <tr className="bg-gray-100">
+                                        <th className="border-b border-gray-200 px-2 py-2 text-left text-xs font-bold">Tanggal</th>
+                                        <th className="border-b border-gray-200 px-2 py-2 text-left text-xs font-bold">Masuk</th>
+                                        <th className="border-b border-gray-200 px-2 py-2 text-left text-xs font-bold">Pulang</th>
+                                        <th className="border-b border-gray-200 px-2 py-2 text-left text-xs font-bold">Terlambat</th>
+                                        <th className="border-b border-gray-200 px-2 py-2 text-left text-xs font-bold">Jam</th>
+                                        {hasIzin && <th className="border-b border-gray-200 px-2 py-2 text-left text-xs font-bold">Izin</th>}
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {staff.data.map((row, rowIndex) => (
+                                        <tr key={rowIndex} className="bg-white hover:bg-gray-50">
+                                          <td className="border-b border-gray-100 px-2 py-1.5 text-[11px]">{row.Tanggal}</td>
+                                          <td className="border-b border-gray-100 px-2 py-1.5 text-[11px]">{row.Masuk}</td>
+                                          <td className="border-b border-gray-100 px-2 py-1.5 text-[11px]">{row.Pulang}</td>
+                                          <td className={`border-b border-gray-100 px-2 py-1.5 text-[11px] ${row.Terlambat !== '00:00' ? 'text-red-600 font-semibold' : ''}`}>
+                                            {row.Terlambat}
+                                          </td>
+                                          <td className="border-b border-gray-100 px-2 py-1.5 text-[11px]">{row['Jam Kerja']}</td>
+                                          {hasIzin && <td className="border-b border-gray-100 px-2 py-1.5 text-[11px] truncate" title={row.Izin}>{row.Izin}</td>}
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </table>
+                                )
+                              })()}
                             </div>
                           )}
                         </div>
