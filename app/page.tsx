@@ -1376,150 +1376,167 @@ export default function Home() {
               return (
                 <div className="space-y-6">
                   {/* Salary Slip */}
-                  <div ref={slipRef} className="bg-white p-8 rounded-lg shadow-lg border-4 border-black max-w-[1200px] mx-auto">
+                  <div ref={slipRef} className="bg-white p-8 border-4 border-black max-w-[1000px] mx-auto" style={{fontFamily: 'Arial, sans-serif'}}>
                     {/* Header */}
-                    <div className="flex justify-between items-start mb-6 pb-4 border-b-4 border-black">
+                    <div className="flex justify-between items-start mb-4">
                       <div>
-                        <h1 className="text-2xl font-bold mb-1">VIDO GARMENT</h1>
-                        <p className="text-xs">Jl. Sidosermo IV Gg. No.37, Surabaya</p>
+                        <h1 className="text-lg font-bold">VIDO GARMENT</h1>
+                        <p className="text-[10px]">Jl. Sidosermo IV Gg. No.37, Surabaya</p>
                       </div>
                       <div className="text-right">
-                        <h2 className="text-3xl font-bold text-gray-700">FABRRIK GROUP</h2>
+                        <h2 className="text-2xl font-bold" style={{color: '#999'}}>FABRRIK GROUP</h2>
                       </div>
                     </div>
 
-                    <h2 className="text-center text-2xl font-bold mb-6">SLIP GAJI KARYAWAN</h2>
+                    <h2 className="text-center text-xl font-bold mb-4">SLIP GAJI KARYAWAN</h2>
 
-                    <div className="grid grid-cols-2 gap-8 mb-6">
-                      {/* Left Column - Basic Info & Salary Breakdown */}
+                    <div className="grid grid-cols-[1.2fr,1.8fr] gap-6">
+                      {/* Left Column */}
                       <div>
                         {/* Employee Info */}
-                        <div className="space-y-1 mb-6 text-sm">
+                        <div className="space-y-0.5 mb-4 text-[11px]">
                           <div className="flex">
-                            <span className="w-32 font-semibold">Bulan</span>
-                            <span>: {new Date().toLocaleDateString('id-ID', { year: 'numeric', month: 'long' })}</span>
+                            <span className="w-20">Bulan</span>
+                            <span className="mr-2">:</span>
+                            <span>{new Date().toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}</span>
                           </div>
                           <div className="flex">
-                            <span className="w-32 font-semibold">Nama</span>
-                            <span>: {slip.nama}</span>
+                            <span className="w-20">N</span>
+                            <span className="mr-2">:</span>
+                            <span>{slip.nama.substring(0, 3).toUpperCase()}</span>
                           </div>
                           <div className="flex">
-                            <span className="w-32 font-semibold">Jabatan</span>
-                            <span>: {staffConfig?.jabatan || '-'}</span>
+                            <span className="w-20">Nama</span>
+                            <span className="mr-2">:</span>
+                            <span>{slip.nama}</span>
+                          </div>
+                          <div className="flex">
+                            <span className="w-20">Jabatan</span>
+                            <span className="mr-2">:</span>
+                            <span>{staffConfig?.jabatan || '-'}</span>
+                          </div>
+                          <div className="flex">
+                            <span className="w-20">Join</span>
+                            <span className="mr-2">:</span>
+                            <span>13 Sep 2021</span>
+                          </div>
+                          <div className="flex">
+                            <span className="w-20">Status</span>
+                            <span className="mr-2">:</span>
+                            <span>Karyawan Produksi</span>
                           </div>
                         </div>
 
-                        {/* Penghasilan & Potongan */}
-                        <div className="grid grid-cols-2 gap-4 mb-4">
-                          {/* Penghasilan */}
-                          <div>
-                            <h3 className="font-bold mb-2 text-sm">Penghasilan</h3>
-                            <div className="space-y-1 text-xs">
-                              <div className="flex justify-between">
-                                <span>Gaji</span>
-                                <div className="flex items-center gap-1">
-                                  <span className="text-[10px]">Rp</span>
-                                  <span className="font-semibold">{slip.gajiPokok.toLocaleString('id-ID')}</span>
+                        {/* Penghasilan & Potongan Side by Side */}
+                        <div className="mb-4">
+                          <div className="grid grid-cols-2 gap-3">
+                            {/* Penghasilan */}
+                            <div>
+                              <h3 className="font-bold mb-1 text-[11px] underline">Penghasilan</h3>
+                              <div className="space-y-0.5 text-[10px]">
+                                <div className="flex justify-between">
+                                  <span>Gaji</span>
+                                  <div className="flex items-center gap-0.5">
+                                    <span className="text-[8px]">Rp</span>
+                                    <span className="font-medium">{slip.gajiPokok.toLocaleString('id-ID')}</span>
+                                  </div>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span>Lembur</span>
+                                  <div className="flex items-center gap-0.5">
+                                    <span className="text-[8px]">Rp</span>
+                                    <span className="font-medium bg-yellow-200 px-1">{slip.totalLembur.toLocaleString('id-ID')}</span>
+                                  </div>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span>Tunjangan Jabatan</span>
+                                  <div className="flex items-center gap-0.5">
+                                    <span className="text-[8px]">Rp</span>
+                                    <span className="font-medium bg-yellow-200 px-1">{(staffConfig?.tunjanganJabatan || 0).toLocaleString('id-ID')}</span>
+                                  </div>
                                 </div>
                               </div>
-                              <div className="flex justify-between">
-                                <span>Lembur</span>
-                                <div className="flex items-center gap-1">
-                                  <span className="text-[10px]">Rp</span>
-                                  <span className="font-semibold">{slip.totalLembur.toLocaleString('id-ID')}</span>
+                            </div>
+
+                            {/* Potongan */}
+                            <div>
+                              <h3 className="font-bold mb-1 text-[11px] underline">Potongan</h3>
+                              <div className="space-y-0.5 text-[10px]">
+                                <div className="flex justify-between">
+                                  <span>Pinjaman</span>
+                                  <div className="flex items-center gap-0.5">
+                                    <span className="text-[8px]">Rp</span>
+                                    <span className="font-medium bg-yellow-200 px-1">-</span>
+                                  </div>
                                 </div>
-                              </div>
-                              <div className="flex justify-between">
-                                <span>Tunjangan Jabatan</span>
-                                <div className="flex items-center gap-1">
-                                  <span className="text-[10px]">Rp</span>
-                                  <span className="font-semibold">{(staffConfig?.tunjanganJabatan || 0).toLocaleString('id-ID')}</span>
+                                <div className="flex justify-between">
+                                  <span>Keterlambatan</span>
+                                  <div className="flex items-center gap-0.5">
+                                    <span className="text-[8px]">Rp</span>
+                                    <span className="font-medium">-</span>
+                                  </div>
                                 </div>
                               </div>
                             </div>
                           </div>
+                        </div>
 
-                          {/* Potongan */}
-                          <div>
-                            <h3 className="font-bold mb-2 text-sm">Potongan</h3>
-                            <div className="space-y-1 text-xs">
-                              <div className="flex justify-between">
-                                <span>Pinjaman</span>
-                                <div className="flex items-center gap-1">
-                                  <span className="text-[10px]">Rp</span>
-                                  <span className="font-semibold">-</span>
-                                </div>
-                              </div>
-                              <div className="flex justify-between">
-                                <span>Keterlambatan</span>
-                                <div className="flex items-center gap-1">
-                                  <span className="text-[10px]">Rp</span>
-                                  <span className="font-semibold">{slip.potonganTerlambat.toLocaleString('id-ID')}</span>
-                                </div>
-                              </div>
-                            </div>
+                        {/* Uang Makan Box with Green Highlight */}
+                        <div className="border border-black p-1 mb-3 inline-block bg-lime-300">
+                          <div className="flex items-center gap-1 text-[10px] font-bold">
+                            <span>Uang Makan = {hariMakan} x Rp 12.000 = {slip.uangMakan.toLocaleString('id-ID')}</span>
                           </div>
                         </div>
 
-                        {/* Uang Makan Box */}
-                        <div className="border-2 border-black p-2 mb-4 inline-block">
-                          <div className="flex items-center gap-2 text-xs">
-                            <span className="bg-yellow-200 px-2 py-1 font-bold">Uang Makan</span>
-                            <span className="font-bold">= {hariMakan} x Rp 12.000 =</span>
-                            <span className="font-bold">{slip.uangMakan.toLocaleString('id-ID')}</span>
-                          </div>
-                        </div>
-
-                        {/* Totals */}
-                        <div className="space-y-1 text-sm mb-2">
-                          <div className="flex justify-between">
-                            <span className="font-bold">Total</span>
-                            <div className="flex items-center gap-1">
-                              <span className="text-[10px]">Rp</span>
-                              <span className="font-bold">{(slip.gajiPokok + slip.totalLembur + slip.uangMakan + (staffConfig?.tunjanganJabatan || 0)).toLocaleString('id-ID')}</span>
-                            </div>
+                        {/* Total */}
+                        <div className="flex justify-between items-center mb-3 text-[11px]">
+                          <span className="font-bold">Total</span>
+                          <div className="flex items-center gap-1">
+                            <span className="font-bold bg-yellow-200 px-2">Rp {(slip.gajiPokok + slip.totalLembur + slip.uangMakan + (staffConfig?.tunjanganJabatan || 0)).toLocaleString('id-ID')}</span>
                           </div>
                         </div>
 
                         {/* Penerimaan Boxes */}
-                        <div className="space-y-2 mt-4">
-                          <div className="border-2 border-black p-2 text-center">
-                            <div className="flex justify-between items-center">
-                              <span className="font-bold text-sm">Penerimaan Bersih =</span>
+                        <div className="space-y-2 mt-4 mb-4">
+                          <div className="border-2 border-black p-1.5">
+                            <div className="flex justify-between items-center text-[11px]">
+                              <span className="font-bold">Penerimaan Bersih =</span>
                               <div className="flex items-center gap-1">
-                                <span className="text-xs">Rp</span>
-                                <span className="font-bold text-lg">{slip.totalGaji.toLocaleString('id-ID')}</span>
+                                <span>Rp</span>
+                                <span className="font-bold">{slip.totalGaji.toLocaleString('id-ID')}</span>
                               </div>
                             </div>
                           </div>
-                          <div className="border-2 border-black p-2 text-center">
-                            <div className="flex justify-between items-center">
-                              <span className="font-bold text-sm">Penerimaan Transfer =</span>
+                          <div className="border-2 border-black p-1.5">
+                            <div className="flex justify-between items-center text-[11px]">
+                              <span className="font-bold">Penerimaan Transfer =</span>
                               <div className="flex items-center gap-1">
-                                <span className="text-xs">Rp</span>
-                                <span className="font-bold text-lg">{slip.totalGaji.toLocaleString('id-ID')}</span>
+                                <span>Rp</span>
+                                <span className="font-bold">{slip.totalGaji.toLocaleString('id-ID')}</span>
                               </div>
                             </div>
                           </div>
                         </div>
 
-                        <div className="text-right mt-6 text-xs">
+                        <div className="text-right mt-6 text-[10px]">
                           <p>Surabaya, {new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
                           <p className="mt-1">Direktur</p>
-                          <p className="mt-8 font-bold">Budi Suryanto</p>
+                          <p className="mt-12 font-bold">Budi Suryanto</p>
                         </div>
                       </div>
 
                       {/* Right Column - Tables */}
-                      <div className="space-y-4">
+                      <div className="space-y-3">
+                        {/* Uang Makan Box (top) */}
+                        <div className="border border-black p-0.5 inline-block bg-yellow-200">
+                          <span className="font-bold text-[9px]">Uang Makan = {hariMakan} x Rp 12.000 = {slip.uangMakan.toLocaleString('id-ID')}</span>
+                        </div>
+
                         {/* Lembur Table */}
                         <div>
-                          <div className="border-2 border-black p-1 mb-1 inline-block bg-yellow-200">
-                            <span className="font-bold text-xs">Uang Makan = {hariMakan} x Rp 12.000 = {slip.uangMakan.toLocaleString('id-ID')}</span>
-                          </div>
-                          <h3 className="font-bold text-sm mb-2">DAFTAR LEMBUR {slip.nama.toUpperCase()}</h3>
-                          <p className="text-xs mb-2">{new Date().toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}</p>
-                          <div className="overflow-auto max-h-[300px] border border-black">
+                          <h3 className="font-bold text-[11px] mb-1">DAFTAR LEMBUR {slip.nama.split(' ')[0].toUpperCase()}</h3>
+                          <p className="text-[9px] mb-1">{new Date().toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}</p>
+                          <div className="overflow-auto max-h-[180px] border border-black">
                             <table className="w-full border-collapse text-[10px]">
                               <thead className="bg-gray-100 sticky top-0">
                                 <tr>
@@ -1563,29 +1580,37 @@ export default function Home() {
 
                         {/* Absensi Table */}
                         <div>
-                          <h3 className="font-bold text-sm mb-2">ABSENSI {slip.nama.toUpperCase()}</h3>
-                          <p className="text-xs mb-2">{new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
-                          <div className="overflow-auto max-h-[300px] border border-black">
-                            <table className="w-full border-collapse text-[10px]">
+                          <h3 className="font-bold text-[11px] mb-1">ABSENSI {slip.nama.split(' ')[0].toUpperCase()}</h3>
+                          <p className="text-[9px] mb-1">{new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
+                          <div className="overflow-auto max-h-[250px] border border-black">
+                            <table className="w-full border-collapse text-[8px]">
                               <thead className="bg-gray-100 sticky top-0">
                                 <tr>
-                                  <th className="border border-black px-1 py-1">Nama</th>
-                                  <th className="border border-black px-1 py-1">Shift</th>
-                                  <th className="border border-black px-1 py-1">Masuk</th>
-                                  <th className="border border-black px-1 py-1">Pulang</th>
-                                  <th className="border border-black px-1 py-1">Rincian</th>
+                                  <th className="border border-black px-0.5 py-0.5">Nama</th>
+                                  <th className="border border-black px-0.5 py-0.5">Shift</th>
+                                  <th className="border border-black px-0.5 py-0.5">Masuk</th>
+                                  <th className="border border-black px-0.5 py-0.5">Pulang</th>
+                                  <th className="border border-black px-0.5 py-0.5">Rincian</th>
                                 </tr>
                               </thead>
                               <tbody>
-                                {slip.absensi.map((row, i) => (
-                                  <tr key={i} className={`hover:bg-gray-50 ${row.Izin.toLowerCase().includes('libur') ? 'bg-red-100' : row.Terlambat !== '00:00' ? 'bg-yellow-100' : ''}`}>
-                                    <td className="border border-black px-1 py-1 font-semibold">{slip.nama.split(' ')[0]}</td>
-                                    <td className="border border-black px-1 py-1 text-center">{row.Tanggal}</td>
-                                    <td className="border border-black px-1 py-1 text-center">{row.Masuk}</td>
-                                    <td className="border border-black px-1 py-1 text-center">{row.Pulang}</td>
-                                    <td className="border border-black px-1 py-1 text-center">{row.Izin || (row.Terlambat !== '00:00' ? row.Terlambat : '')}</td>
-                                  </tr>
-                                ))}
+                                {slip.absensi.map((row, i) => {
+                                  let bgColor = ''
+                                  if (row.Izin.toLowerCase().includes('libur') || row.Izin.toLowerCase().includes('sakit')) {
+                                    bgColor = 'bg-red-200'
+                                  } else if (row.Terlambat && row.Terlambat !== '00:00') {
+                                    bgColor = 'bg-orange-200'
+                                  }
+                                  return (
+                                    <tr key={i} className={bgColor}>
+                                      <td className="border border-black px-0.5 py-0.5 font-semibold">{slip.nama.split(' ')[0].toUpperCase()}</td>
+                                      <td className="border border-black px-0.5 py-0.5 text-center">{row.Tanggal}</td>
+                                      <td className="border border-black px-0.5 py-0.5 text-center">{row.Masuk}</td>
+                                      <td className="border border-black px-0.5 py-0.5 text-center">{row.Pulang}</td>
+                                      <td className="border border-black px-0.5 py-0.5 text-center">{row.Izin || (row.Terlambat !== '00:00' ? row.Terlambat : '')}</td>
+                                    </tr>
+                                  )
+                                })}
                               </tbody>
                             </table>
                           </div>
