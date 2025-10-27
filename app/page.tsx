@@ -91,6 +91,7 @@ interface StaffSalary {
   bank?: string
   joinDate?: string
   status?: string
+  pinjaman?: number
 }
 
 // Payroll rules settings
@@ -136,8 +137,8 @@ const DEFAULT_STAFF_SALARIES: StaffSalary[] = [
   { name: 'Eko Prastio', dailyRate: 180500, manager: 'Widia Novitasari', jabatan: 'Production Jersey', tunjanganJabatan: 0, sumberDana: 'RCP', vgiAmount: 2600000, rekening: '0882343331', atasNamaRekening: 'Eko Prastio', bank: 'BCA', joinDate: '26 Nov 2018', status: 'permanen' },
   { name: 'Tri Hariyono', dailyRate: 129600, manager: 'Widia Novitasari', jabatan: 'SPV Production & QC', tunjanganJabatan: 500000, sumberDana: 'RCP', rekening: '0881849126', atasNamaRekening: 'Tri Hariyono', bank: 'BCA', joinDate: '04 Feb 2020', status: 'permanen' },
   { name: 'Tata Wibowo', dailyRate: 107200, manager: 'Widia Novitasari', jabatan: 'Embordiery', tunjanganJabatan: 0, sumberDana: 'RCP', rekening: '4610545365', atasNamaRekening: 'Tata Wibowo', bank: 'BCA', joinDate: '29 Jan 2020', status: 'permanen' },
-  { name: 'In Amullah An Nafi', dailyRate: 40000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0, sumberDana: 'RCP', rekening: '8374928734', atasNamaRekening: 'Nafi', bank: 'BCA', joinDate: '13 Okt 2025', status: 'training' },
-  { name: 'Muhammad Bintang Ageng', dailyRate: 40000, manager: 'Widia Novitasari', jabatan: 'Operator Jersey', tunjanganJabatan: 0, sumberDana: 'RCP', rekening: '8472347093', atasNamaRekening: 'Bintang', bank: 'BCA', joinDate: '20 Okt 2025', status: 'training' },
+  { name: 'In Amullah An Nafi', dailyRate: 40000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0, sumberDana: 'RCP', rekening: '3250470877', atasNamaRekening: 'Eko Yulianto', bank: 'BCA', joinDate: '13 Okt 2025', status: 'training' },
+  { name: 'Muhammad Bintang Ageng', dailyRate: 40000, manager: 'Widia Novitasari', jabatan: 'Operator Jersey', tunjanganJabatan: 0, sumberDana: 'RCP', rekening: '3252052353', atasNamaRekening: 'Muhammad Bintang Ageng Wibowo', bank: 'BCA', joinDate: '20 Okt 2025', status: 'training' },
   { name: 'Achmad Baidowi', dailyRate: 115200, manager: 'Widia Novitasari', jabatan: 'Cutting Spesialist', tunjanganJabatan: 500000, sumberDana: 'RCP', rekening: '4610484561', atasNamaRekening: 'Achmad Baidowi', bank: 'BCA', joinDate: '13 Sep 2021', status: 'permanen' },
   { name: 'Solikatin', dailyRate: 98000, manager: 'Widia Novitasari', jabatan: 'Embordiery', tunjanganJabatan: 0, sumberDana: 'RCP', rekening: '3251805529', atasNamaRekening: 'Solikatin', bank: 'BCA', joinDate: '18 Aug 2022', status: 'permanen' },
   { name: 'Mita Nur Fitriani', dailyRate: 91600, manager: 'Widia Novitasari', jabatan: 'Workshop General Admin', tunjanganJabatan: 0, sumberDana: 'RCP', rekening: '5060409899', atasNamaRekening: 'Mita NurFitriani', bank: 'BCA', joinDate: '02 Feb 2023', status: 'permanen' },
@@ -717,6 +718,8 @@ export default function Home() {
 
         // Parse izin information from the tanggal column
         const izinInfo = parseIzinFromTanggal(row.Tanggal)
+        const dayName = getDayName(row.Tanggal)
+        const isSaturday = dayName === 'Sab'
 
         if (!izinInfo.isIzin && !row.Izin) {
           // No izin = working day
@@ -730,13 +733,13 @@ export default function Home() {
             eligibleForMakan = false
           }
 
-          // Check checkout at exactly 17:00
-          if (payrollSettings.potongUangMakan.checkoutAt17 && row.Pulang === '17:00') {
+          // Check checkout at exactly 17:00 (but not on Saturday - Saturday normal end is 15:00)
+          if (payrollSettings.potongUangMakan.checkoutAt17 && row.Pulang === '17:00' && !isSaturday) {
             eligibleForMakan = false
           }
 
-          // Check checkout before 17:00
-          if (payrollSettings.potongUangMakan.checkoutBefore17 && isEarlyCheckout(row.Pulang, false) && row.Pulang !== '17:00') {
+          // Check checkout before 17:00 (but not on Saturday - Saturday normal end is 15:00)
+          if (payrollSettings.potongUangMakan.checkoutBefore17 && isEarlyCheckout(row.Pulang, false) && row.Pulang !== '17:00' && !isSaturday) {
             eligibleForMakan = false
           }
 
@@ -751,8 +754,8 @@ export default function Home() {
           // Check if should get uang makan for this izin
           let eligibleForMakan = shouldGetUangMakanForIzin(jenisIzin, alasan, isStaffManager)
 
-          // Even with izin, cut uang makan if pulang is exactly 17:00
-          if (eligibleForMakan && isEarlyCheckout(row.Pulang, true)) {
+          // Even with izin, cut uang makan if pulang is exactly 17:00 (but not on Saturday)
+          if (eligibleForMakan && isEarlyCheckout(row.Pulang, true) && !isSaturday) {
             eligibleForMakan = false
           }
 
@@ -793,7 +796,8 @@ export default function Home() {
       const gajiPokok = totalHariKerja * gajiPerHari
       const uangMakan = hariMakan * UANG_MAKAN_PER_HARI
       const tunjanganJabatan = staffConfig?.tunjanganJabatan || 0
-      const totalGaji = gajiPokok + uangMakan - potonganTerlambat + totalLembur + tunjanganJabatan
+      const pinjaman = staffConfig?.pinjaman || 0
+      const totalGaji = gajiPokok + uangMakan - potonganTerlambat + totalLembur + tunjanganJabatan - pinjaman
 
       slips.push({
         nama,
@@ -1216,7 +1220,7 @@ export default function Home() {
                       <span>Pinjaman</span>
                       <div className="flex items-center gap-0.5">
                         <span className="text-[8px]">Rp</span>
-                        <span className="font-medium bg-yellow-200 px-1">-</span>
+                        <span className="font-medium bg-red-200 px-1">{(staffConfig?.pinjaman || 0) > 0 ? (staffConfig?.pinjaman || 0).toLocaleString('id-ID') : '-'}</span>
                       </div>
                     </div>
                     <div className="flex justify-between">
@@ -1241,7 +1245,7 @@ export default function Home() {
               <div className="flex justify-between items-center mb-3 text-[11px]">
                 <span className="font-bold">Total</span>
                 <div className="flex items-center gap-1">
-                  <span className="font-bold bg-yellow-200 px-2">Rp {(slip.gajiPokok + slip.totalLembur + slip.uangMakan + (staffConfig?.tunjanganJabatan || 0)).toLocaleString('id-ID')}</span>
+                  <span className="font-bold bg-yellow-200 px-2">Rp {(slip.gajiPokok + slip.totalLembur + slip.uangMakan + (staffConfig?.tunjanganJabatan || 0) - (staffConfig?.pinjaman || 0)).toLocaleString('id-ID')}</span>
                 </div>
               </div>
 
@@ -1395,8 +1399,8 @@ export default function Home() {
                           const alasan = izinInfo.isIzin ? izinInfo.alasan : ''
                           let getsUangMakan = shouldGetUangMakanForIzin(jenisIzin, alasan, isManager(staffSalaries.find(s => s.name === slip.nama)?.jabatan || ''))
 
-                          // Even with izin, cut uang makan if pulang is exactly 17:00
-                          if (getsUangMakan && isEarlyCheckout(row.Pulang, true)) {
+                          // Even with izin, cut uang makan if pulang is exactly 17:00 (but not on Saturday)
+                          if (getsUangMakan && isEarlyCheckout(row.Pulang, true) && dayName !== 'Sab') {
                             getsUangMakan = false
                           }
 
@@ -1407,7 +1411,7 @@ export default function Home() {
                           }
 
                           keterangan = row.Izin || jenisIzin || alasan || 'Izin'
-                        } else if (isLateOneHourOrMore(row.Terlambat) || isEarlyCheckout(row.Pulang, false)) {
+                        } else if (isLateOneHourOrMore(row.Terlambat) || (isEarlyCheckout(row.Pulang, false) && dayName !== 'Sab')) {
                           bgColor = 'bg-yellow-200' // Uang makan cut (late/early)
                           if (row.Terlambat !== '00:00') {
                             keterangan = `Terlambat ${row.Terlambat}`
@@ -1415,7 +1419,7 @@ export default function Home() {
                             // Check if pulang is exactly 17:00
                             if (row.Pulang === '17:00') {
                               keterangan = 'tidak check out'
-                            } else {
+                            } else if (dayName !== 'Sab') {
                               keterangan = 'Pulang Awal'
                             }
                           }
@@ -1856,6 +1860,19 @@ export default function Home() {
                         placeholder="0 (optional)"
                       />
                       <p className="text-xs text-gray-500 mt-1">Leave 0 if no VGI</p>
+                    </div>
+
+                    {/* Pinjaman */}
+                    <div>
+                      <label className="block text-sm font-bold text-gray-700 mb-2">💸 Pinjaman</label>
+                      <input
+                        type="number"
+                        value={editingStaff.pinjaman || 0}
+                        onChange={(e) => setEditingStaff({...editingStaff, pinjaman: parseInt(e.target.value) || 0})}
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all outline-none font-mono"
+                        placeholder="0 (akan dipotong dari gaji)"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">Akan dikurangi dari total gaji</p>
                     </div>
 
                     {/* Rekening */}
