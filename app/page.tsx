@@ -727,8 +727,8 @@ export default function Home() {
             eligibleForMakan = false
           }
 
-          // Check checkout at exactly 17:00 (but not on Saturday - Saturday normal end is 15:00)
-          if (payrollSettings.potongUangMakan.checkoutAt17 && row.Pulang === '17:00' && !isSaturday) {
+          // Check checkout at exactly 17:00 (including Saturday - Saturday normal end is 15:00, so 17:00 means overtime)
+          if (payrollSettings.potongUangMakan.checkoutAt17 && row.Pulang === '17:00') {
             eligibleForMakan = false
           }
 
@@ -1423,8 +1423,8 @@ export default function Home() {
                             if (row.Terlambat !== '00:00') {
                               keterangan = `Terlambat ${row.Terlambat}`
                             } else {
-                              // Check if pulang is exactly 17:00 (but not on Saturday - Saturday normal end is 15:00)
-                              if (row.Pulang === '17:00' && dayName !== 'Sab') {
+                              // Check if pulang is exactly 17:00 (including Saturday - Saturday normal end is 15:00, so 17:00 means overtime)
+                              if (row.Pulang === '17:00') {
                                 keterangan = 'tidak check out'
                               } else if (dayName !== 'Sab') {
                                 keterangan = 'Pulang Awal'
