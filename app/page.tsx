@@ -742,15 +742,47 @@ export default function Home() {
     try {
       alert('Generating image... Please wait.')
 
+      // Capture the slip directly without modifications first
       const canvas = await html2canvas(slipRef.current, {
         scale: 2,
         backgroundColor: '#ffffff',
         logging: false,
         useCORS: true,
-        allowTaint: true
+        allowTaint: true,
+        onclone: (clonedDoc) => {
+          // Fix only color issues, keep layout
+          const allElements = clonedDoc.querySelectorAll('*')
+          allElements.forEach(el => {
+            const htmlEl = el as HTMLElement
+
+            // Check computed styles for problematic colors
+            const computedStyle = clonedDoc.defaultView?.getComputedStyle(el)
+            if (computedStyle) {
+              // Fix only problematic oklch colors
+              if (computedStyle.color?.includes('oklch') || computedStyle.color?.includes('color-mix')) {
+                htmlEl.style.color = 'black'
+              }
+              if (computedStyle.backgroundColor?.includes('oklch') || computedStyle.backgroundColor?.includes('color-mix')) {
+                htmlEl.style.backgroundColor = 'white'
+              }
+              if (computedStyle.borderTopColor?.includes('oklch') || computedStyle.borderTopColor?.includes('color-mix')) {
+                htmlEl.style.borderTopColor = 'black'
+              }
+              if (computedStyle.borderBottomColor?.includes('oklch') || computedStyle.borderBottomColor?.includes('color-mix')) {
+                htmlEl.style.borderBottomColor = 'black'
+              }
+              if (computedStyle.borderLeftColor?.includes('oklch') || computedStyle.borderLeftColor?.includes('color-mix')) {
+                htmlEl.style.borderLeftColor = 'black'
+              }
+              if (computedStyle.borderRightColor?.includes('oklch') || computedStyle.borderRightColor?.includes('color-mix')) {
+                htmlEl.style.borderRightColor = 'black'
+              }
+            }
+          })
+        }
       })
 
-      // Convert canvas to blob
+      // Convert to blob and copy to clipboard
       canvas.toBlob(async (blob) => {
         if (!blob) {
           alert('Failed to generate image')
@@ -766,24 +798,79 @@ export default function Home() {
           ])
           alert(`✅ Slip image for ${staffName} copied to clipboard!`)
         } catch (clipboardError) {
-          console.error('Error copying to clipboard:', clipboardError)
+          console.error('Clipboard error:', clipboardError)
 
-          // Fallback: Download image instead
-          const url = URL.createObjectURL(blob)
-          const a = document.createElement('a')
-          a.href = url
-          a.download = `slip-gaji-${staffName.replace(/\s+/g, '-').toLowerCase()}.png`
-          document.body.appendChild(a)
-          a.click()
-          document.body.removeChild(a)
-          URL.revokeObjectURL(url)
+          // Try alternative method - create a new canvas from the first one
+          try {
+            const dataUrl = canvas.toDataURL('image/png')
+            const img = new Image()
+            img.src = dataUrl
 
-          alert('✅ Image downloaded instead of copied (clipboard not supported)')
+            img.onload = async () => {
+              // Create a fresh canvas
+              const freshCanvas = document.createElement('canvas')
+              freshCanvas.width = canvas.width
+              freshCanvas.height = canvas.height
+              const ctx = freshCanvas.getContext('2d')!
+
+              // Draw white background
+              ctx.fillStyle = 'white'
+              ctx.fillRect(0, 0, freshCanvas.width, freshCanvas.height)
+
+              // Draw the image
+              ctx.drawImage(img, 0, 0)
+
+              const freshBlob = await new Promise<Blob>((resolve) => {
+                freshCanvas.toBlob((blob) => resolve(blob!), 'image/png')
+              })
+
+              await navigator.clipboard.write([
+                new ClipboardItem({
+                  'image/png': freshBlob
+                })
+              ])
+              alert(`✅ Slip image for ${staffName} copied to clipboard!`)
+            }
+          } catch (fallbackError) {
+            console.error('Fallback failed:', fallbackError)
+
+            // Final fallback - download the image
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = `slip-gaji-${staffName.replace(/\s+/g, '-').toLowerCase()}.png`
+            document.body.appendChild(a)
+            a.click()
+            document.body.removeChild(a)
+            URL.revokeObjectURL(url)
+
+            alert('⬇️ Image downloaded instead')
+          }
         }
       }, 'image/png')
     } catch (error) {
       console.error('Error generating image:', error)
-      alert('❌ Failed to generate slip image. Please try again.')
+
+      // If html2canvas still fails, try a completely different approach
+      try {
+        // Simple approach - just try to capture the element with minimal config
+        const simpleCanvas = await html2canvas(slipRef.current, {
+          backgroundColor: '#ffffff'
+        })
+
+        const blob = await new Promise<Blob>((resolve) => {
+          simpleCanvas.toBlob((blob) => resolve(blob!), 'image/png')
+        })
+
+        await navigator.clipboard.write([
+          new ClipboardItem({
+            'image/png': blob
+          })
+        ])
+        alert(`✅ Slip image for ${staffName} copied to clipboard!`)
+      } catch (simpleError) {
+        alert('❌ Copy failed. Please take a screenshot manually.')
+      }
     }
   }
 
