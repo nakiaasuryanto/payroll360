@@ -83,7 +83,7 @@ interface StaffSalary {
   jabatan: string
   tunjanganJabatan: number
   lembur?: number
-  insentif?: number
+  insentif: number
   sumberDana?: string
   vgiAmount?: number
   rekening?: string
@@ -123,50 +123,44 @@ const DEFAULT_PAYROLL_SETTINGS: PayrollSettings = {
 
 const DEFAULT_STAFF_SALARIES: StaffSalary[] = [
   // SKG + VGI
-  { name: 'Budi Suryanto', dailyRate: 150000, manager: 'Top M', jabatan: 'CEO', tunjanganJabatan: 1000000, sumberDana: 'SKG', vgiAmount: 13500000, rekening: '3250494563', atasNamaRekening: 'Budi Suryanto', bank: 'BCA', joinDate: '18 Sep 2018', status: 'permanen' },
-  { name: 'Mucharom Rusdiana', dailyRate: 362800, manager: 'Top M', jabatan: 'Bussiness Development Manager', tunjanganJabatan: 1000000, sumberDana: 'SKG', vgiAmount: 2700000, rekening: '0891062124', atasNamaRekening: 'Mucharom Rusdiana', bank: 'BCA', joinDate: '08 Dec 2016', status: 'permanen' },
-  { name: 'M. Bagus Suryo Laksono', dailyRate: 158400, manager: 'Mucharom Rusdiana', jabatan: 'Logistic & Supply Chain Manager', tunjanganJabatan: 200000, sumberDana: 'SKG', vgiAmount: 2500000, rekening: '0500319950', atasNamaRekening: 'M Bagus Suryo Laksono', bank: 'BCA', joinDate: '04 Jan 2021', status: 'permanen' },
-  { name: 'Rahmat Ragil Hidayat', dailyRate: 86400, manager: 'Mucharom Rusdiana', jabatan: 'Office General Admin', tunjanganJabatan: 250000, sumberDana: 'SKG', rekening: '8945355677', atasNamaRekening: 'Rahmat Ragil Hidayat', bank: 'BCA', joinDate: '21 Feb 2024', status: 'permanen' },
-  { name: 'Rizka Maulidah', dailyRate: 100000, manager: 'Diah Ayu Fajar Cahyaningrum', jabatan: 'Sales & CS', tunjanganJabatan: 0, sumberDana: 'SKG', rekening: '3251876655', atasNamaRekening: 'Rizka Maulidah', bank: 'BCA', joinDate: '15 Nov 2023', status: 'permanen' },
-  { name: 'Laili Nisaatus Sholihah', dailyRate: 80000, manager: 'Mucharom Rusdiana', jabatan: 'General Admin MO', tunjanganJabatan: 0, sumberDana: 'SKG', rekening: '4720445609', atasNamaRekening: 'Laili Nisaatus Sholihah', bank: 'BCA', joinDate: '12 Sep 24', status: 'permanen' },
-  { name: 'Fitri Nurcomariah', dailyRate: 80000, manager: 'Mucharom Rusdiana', jabatan: 'Designer Product', tunjanganJabatan: 0, sumberDana: 'SKG', rekening: '8221549180', atasNamaRekening: 'Fitri Nurcomariah', bank: 'BCA', joinDate: '25 Nov 2024', status: 'permanen' },
-  { name: 'Fifien Ayu Ramadhani', dailyRate: 80000, manager: 'Diah Ayu Fajar Cahyaningrum', jabatan: 'Sales & CS', tunjanganJabatan: 0, sumberDana: 'SKG', rekening: '5120561091', atasNamaRekening: 'Fifien Ayu Ramadhani', bank: 'BCA', joinDate: '28 Apr 2025', status: 'permanen' },
-  { name: 'Atika Permatasari', dailyRate: 68000, manager: 'Diah Ayu Fajar Cahyaningrum', jabatan: 'Sales & CS', tunjanganJabatan: 0, sumberDana: 'SKG', rekening: '6265073232', atasNamaRekening: 'Atika Permata Sar', bank: 'BCA', joinDate: '25 Aug 2025', status: 'permanen' },
+  { name: 'Budi Suryanto', dailyRate: 150000, manager: 'Top M', jabatan: 'CEO', tunjanganJabatan: 1000000, insentif: 0, sumberDana: 'SKG', vgiAmount: 13500000, rekening: '3250494563', atasNamaRekening: 'Budi Suryanto', bank: 'BCA', joinDate: '18 Sep 2018', status: 'permanen' },
+  { name: 'Mucharom Rusdiana', dailyRate: 362800, manager: 'Top M', jabatan: 'Bussiness Development Manager', tunjanganJabatan: 1000000, insentif: 0, sumberDana: 'SKG', vgiAmount: 2700000, rekening: '0891062124', atasNamaRekening: 'Mucharom Rusdiana', bank: 'BCA', joinDate: '08 Dec 2016', status: 'permanen' },
+  { name: 'M. Bagus Suryo Laksono', dailyRate: 158400, manager: 'Mucharom Rusdiana', jabatan: 'Logistic & Supply Chain Manager', tunjanganJabatan: 200000, insentif: 0, sumberDana: 'SKG', vgiAmount: 2500000, rekening: '0500319950', atasNamaRekening: 'M Bagus Suryo Laksono', bank: 'BCA', joinDate: '04 Jan 2021', status: 'permanen' },
+  { name: 'Rahmat Ragil Hidayat', dailyRate: 86400, manager: 'Mucharom Rusdiana', jabatan: 'Office General Admin', tunjanganJabatan: 250000, insentif: 0, sumberDana: 'SKG', rekening: '8945355677', atasNamaRekening: 'Rahmat Ragil Hidayat', bank: 'BCA', joinDate: '21 Feb 2024', status: 'permanen' },
+  { name: 'Rizka Maulidah', dailyRate: 100000, manager: 'Diah Ayu Fajar Cahyaningrum', jabatan: 'Sales & CS', tunjanganJabatan: 0, insentif: 0, sumberDana: 'SKG', rekening: '3251876655', atasNamaRekening: 'Rizka Maulidah', bank: 'BCA', joinDate: '15 Nov 2023', status: 'permanen' },
+  { name: 'Laili Nisaatus Sholihah', dailyRate: 80000, manager: 'Mucharom Rusdiana', jabatan: 'General Admin MO', tunjanganJabatan: 0, insentif: 0, sumberDana: 'SKG', rekening: '4720445609', atasNamaRekening: 'Laili Nisaatus Sholihah', bank: 'BCA', joinDate: '12 Sep 24', status: 'permanen' },
+  { name: 'Fitri Nurcomariah', dailyRate: 80000, manager: 'Mucharom Rusdiana', jabatan: 'Designer Product', tunjanganJabatan: 0, insentif: 0, sumberDana: 'SKG', rekening: '8221549180', atasNamaRekening: 'Fitri Nurcomariah', bank: 'BCA', joinDate: '25 Nov 2024', status: 'permanen' },
+  { name: 'Fifien Ayu Ramadhani', dailyRate: 80000, manager: 'Diah Ayu Fajar Cahyaningrum', jabatan: 'Sales & CS', tunjanganJabatan: 0, insentif: 0, sumberDana: 'SKG', rekening: '5120561091', atasNamaRekening: 'Fifien Ayu Ramadhani', bank: 'BCA', joinDate: '28 Apr 2025', status: 'permanen' },
+  { name: 'Atika Permatasari', dailyRate: 68000, manager: 'Diah Ayu Fajar Cahyaningrum', jabatan: 'Sales & CS', tunjanganJabatan: 0, insentif: 0, sumberDana: 'SKG', rekening: '6265073232', atasNamaRekening: 'Atika Permata Sar', bank: 'BCA', joinDate: '25 Aug 2025', status: 'permanen' },
 
   // RCP + VGI
-  { name: 'Eko Prastio', dailyRate: 180500, manager: 'Widia Novitasari', jabatan: 'Production Jersey', tunjanganJabatan: 0, sumberDana: 'RCP', vgiAmount: 2600000, rekening: '0882343331', atasNamaRekening: 'Eko Prastio', bank: 'BCA', joinDate: '26 Nov 2018', status: 'permanen' },
-  { name: 'Tri Hariyono', dailyRate: 129600, manager: 'Widia Novitasari', jabatan: 'SPV Production & QC', tunjanganJabatan: 500000, sumberDana: 'RCP', rekening: '0881849126', atasNamaRekening: 'Tri Hariyono', bank: 'BCA', joinDate: '04 Feb 2020', status: 'permanen' },
-  { name: 'Tata Wibowo', dailyRate: 107200, manager: 'Widia Novitasari', jabatan: 'Embordiery', tunjanganJabatan: 0, sumberDana: 'RCP', rekening: '4610545365', atasNamaRekening: 'Tata Wibowo', bank: 'BCA', joinDate: '29 Jan 2020', status: 'permanen' },
-  { name: 'In Amullah An Nafi', dailyRate: 40000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0, sumberDana: 'RCP', rekening: '3250470877', atasNamaRekening: 'Eko Yulianto', bank: 'BCA', joinDate: '13 Okt 2025', status: 'training' },
-  { name: 'Muhammad Bintang Ageng', dailyRate: 40000, manager: 'Widia Novitasari', jabatan: 'Operator Jersey', tunjanganJabatan: 0, sumberDana: 'RCP', rekening: '3252052353', atasNamaRekening: 'Muhammad Bintang Ageng Wibowo', bank: 'BCA', joinDate: '20 Okt 2025', status: 'training' },
-  { name: 'Achmad Baidowi', dailyRate: 115200, manager: 'Widia Novitasari', jabatan: 'Cutting Spesialist', tunjanganJabatan: 500000, sumberDana: 'RCP', rekening: '4610484561', atasNamaRekening: 'Achmad Baidowi', bank: 'BCA', joinDate: '13 Sep 2021', status: 'permanen' },
-  { name: 'Solikatin', dailyRate: 98000, manager: 'Widia Novitasari', jabatan: 'Embordiery', tunjanganJabatan: 0, sumberDana: 'RCP', rekening: '3251805529', atasNamaRekening: 'Solikatin', bank: 'BCA', joinDate: '18 Aug 2022', status: 'permanen' },
-  { name: 'Mita Nur Fitriani', dailyRate: 91600, manager: 'Widia Novitasari', jabatan: 'Workshop General Admin', tunjanganJabatan: 0, sumberDana: 'RCP', rekening: '5060409899', atasNamaRekening: 'Mita NurFitriani', bank: 'BCA', joinDate: '02 Feb 2023', status: 'permanen' },
-  { name: 'Kasianto', dailyRate: 82000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0, sumberDana: 'RCP', rekening: '3251904764', atasNamaRekening: 'Kasianto', bank: 'BCA', joinDate: '24 Jul 2023', status: 'permanen' },
-  { name: 'Nurva Dina Amalianti', dailyRate: 60000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0, sumberDana: 'RCP', rekening: '3251938642', atasNamaRekening: 'Nurva Dina Amalianti', bank: 'BCA', joinDate: '21 May 2024', status: 'permanen' },
-  { name: 'Nabila Maulidya Putri', dailyRate: 80000, manager: 'Widia Novitasari', jabatan: 'Operator Jersey', tunjanganJabatan: 0, sumberDana: 'RCP', rekening: '1841653284', atasNamaRekening: 'Nabila Maulidya Putri', bank: 'BCA', joinDate: '06 Nov 2024', status: 'permanen' },
-  { name: 'Widodo Saputra', dailyRate: 56000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0, sumberDana: 'RCP', rekening: '3252045047', atasNamaRekening: 'Hesti Dwi Anggraeni', bank: 'BCA', joinDate: '07 Jan 2025', status: 'permanen' },
-  { name: 'Natasha Dwi Aprilia', dailyRate: 48000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0, sumberDana: 'RCP', rekening: '6670880387', atasNamaRekening: 'Natasha Dwi aprilia', bank: 'BCA', joinDate: '06 Aug 2025', status: 'permanen' },
-  { name: 'Anis Munawaroh', dailyRate: 40000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0, sumberDana: 'RCP', status: 'permanen' },
-  { name: 'Azmil Qurrota A\'yun', dailyRate: 40000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0, sumberDana: 'RCP', status: 'permanen' },
-  { name: 'Alek Sugianto', dailyRate: 0, manager: 'Widia Novitasari', jabatan: 'Staff', tunjanganJabatan: 0, status: 'permanen' },
+  { name: 'Eko Prastio', dailyRate: 180500, manager: 'Widia Novitasari', jabatan: 'Production Jersey', tunjanganJabatan: 0, insentif: 0, sumberDana: 'RCP', vgiAmount: 2600000, rekening: '0882343331', atasNamaRekening: 'Eko Prastio', bank: 'BCA', joinDate: '26 Nov 2018', status: 'permanen' },
+  { name: 'Tri Hariyono', dailyRate: 129600, manager: 'Widia Novitasari', jabatan: 'SPV Production & QC', tunjanganJabatan: 500000, insentif: 200000, sumberDana: 'RCP', rekening: '0881849126', atasNamaRekening: 'Tri Hariyono', bank: 'BCA', joinDate: '04 Feb 2020', status: 'permanen' },
+  { name: 'Tata Wibowo', dailyRate: 107200, manager: 'Widia Novitasari', jabatan: 'Embordiery', tunjanganJabatan: 0, insentif: 0, sumberDana: 'RCP', rekening: '4610545365', atasNamaRekening: 'Tata Wibowo', bank: 'BCA', joinDate: '29 Jan 2020', status: 'permanen' },
+  { name: 'In Amullah An Nafi', dailyRate: 40000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0, insentif: 0, sumberDana: 'RCP', rekening: '3250470877', atasNamaRekening: 'Eko Yulianto', bank: 'BCA', joinDate: '13 Okt 2025', status: 'training' },
+  { name: 'Muhammad Bintang Ageng', dailyRate: 40000, manager: 'Widia Novitasari', jabatan: 'Operator Jersey', tunjanganJabatan: 0, insentif: 0, sumberDana: 'RCP', rekening: '3252052353', atasNamaRekening: 'Muhammad Bintang Ageng Wibowo', bank: 'BCA', joinDate: '20 Okt 2025', status: 'training' },
+  { name: 'Achmad Baidowi', dailyRate: 115200, manager: 'Widia Novitasari', jabatan: 'Cutting Spesialist', tunjanganJabatan: 500000, insentif: 0, sumberDana: 'RCP', vgiAmount: 1350000, rekening: '4610484561', atasNamaRekening: 'Achmad Baidowi', bank: 'BCA', joinDate: '13 Sep 2021', status: 'permanen' },
+  { name: 'Solikatin', dailyRate: 98000, manager: 'Widia Novitasari', jabatan: 'Embordiery', tunjanganJabatan: 0, insentif: 0, sumberDana: 'RCP', rekening: '3251805529', atasNamaRekening: 'Solikatin', bank: 'BCA', joinDate: '18 Aug 2022', status: 'permanen' },
+  { name: 'Mita Nur Fitriani', dailyRate: 91600, manager: 'Widia Novitasari', jabatan: 'Workshop General Admin', tunjanganJabatan: 0, insentif: 0, sumberDana: 'RCP', rekening: '5060409899', atasNamaRekening: 'Mita NurFitriani', bank: 'BCA', joinDate: '02 Feb 2023', status: 'permanen' },
+  { name: 'Kasianto', dailyRate: 82000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0, insentif: 0, sumberDana: 'RCP', rekening: '3251904764', atasNamaRekening: 'Kasianto', bank: 'BCA', joinDate: '24 Jul 2023', status: 'permanen' },
+  { name: 'Nurva Dina Amalianti', dailyRate: 60000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0, insentif: 0, sumberDana: 'RCP', rekening: '3251938642', atasNamaRekening: 'Nurva Dina Amalianti', bank: 'BCA', joinDate: '21 May 2024', status: 'permanen' },
+  { name: 'Nabila Maulidya Putri', dailyRate: 80000, manager: 'Widia Novitasari', jabatan: 'Operator Jersey', tunjanganJabatan: 0, insentif: 0, sumberDana: 'RCP', rekening: '1841653284', atasNamaRekening: 'Nabila Maulidya Putri', bank: 'BCA', joinDate: '06 Nov 2024', status: 'permanen' },
+  { name: 'Widodo Saputra', dailyRate: 56000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0, insentif: 0, sumberDana: 'RCP', rekening: '3252045047', atasNamaRekening: 'Hesti Dwi Anggraeni', bank: 'BCA', joinDate: '07 Jan 2025', status: 'permanen' },
+  { name: 'Natasha Dwi Aprilia', dailyRate: 48000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0, insentif: 0, sumberDana: 'RCP', rekening: '6670880387', atasNamaRekening: 'Natasha Dwi aprilia', bank: 'BCA', joinDate: '06 Aug 2025', status: 'permanen' },
+  { name: 'Anis Munawaroh', dailyRate: 40000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0, insentif: 0, sumberDana: 'RCP', status: 'permanen' },
+  { name: 'Azmil Qurrota A\'yun', dailyRate: 40000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0, insentif: 0, sumberDana: 'RCP', status: 'permanen' },
+  { name: 'Alek Sugianto', dailyRate: 0, manager: 'Widia Novitasari', jabatan: 'Staff', tunjanganJabatan: 0, insentif: 0, status: 'permanen' },
 
   // KSP + VGI
-  { name: 'Widia Novitasari', dailyRate: 196800, manager: 'Top M', jabatan: 'Manager Production', tunjanganJabatan: 800000, sumberDana: 'KSP', rekening: '0882211043', atasNamaRekening: 'Widia Novitasari', bank: 'BCA', joinDate: '07 Feb 2019', status: 'permanen' },
-  { name: 'Diah Ayu Fajar Cahyaningrum', dailyRate: 146000, manager: 'Top M', jabatan: 'Sales & Client Relations Manager', tunjanganJabatan: 400000, sumberDana: 'KSP', vgiAmount: 2500000, rekening: '0882211060', atasNamaRekening: 'Diah Ayu Cahyaningrum', bank: 'BCA', joinDate: '26 Aug 2019', status: 'permanen' },
-  { name: 'Nadira Maysa Suryanto', dailyRate: 132000, manager: 'Top M', jabatan: 'Marketing & Partnerships Manager', tunjanganJabatan: 500000, sumberDana: 'KSP', rekening: '0640674296', atasNamaRekening: 'Nadira Maysa Suryanto', bank: 'BCA', joinDate: '08 Sep 2023', status: 'permanen' },
+  { name: 'Widia Novitasari', dailyRate: 196800, manager: 'Top M', jabatan: 'Manager Production', tunjanganJabatan: 800000, insentif: 0, sumberDana: 'KSP', rekening: '0882211043', atasNamaRekening: 'Widia Novitasari', bank: 'BCA', joinDate: '07 Feb 2019', status: 'permanen' },
+  { name: 'Diah Ayu Fajar Cahyaningrum', dailyRate: 146000, manager: 'Top M', jabatan: 'Sales & Client Relations Manager', tunjanganJabatan: 400000, insentif: 0, sumberDana: 'KSP', vgiAmount: 2500000, rekening: '0882211060', atasNamaRekening: 'Diah Ayu Cahyaningrum', bank: 'BCA', joinDate: '26 Aug 2019', status: 'permanen' },
+  { name: 'Nadira Maysa Suryanto', dailyRate: 132000, manager: 'Top M', jabatan: 'Marketing & Partnerships Manager', tunjanganJabatan: 500000, insentif: 0, sumberDana: 'KSP', rekening: '0640674296', atasNamaRekening: 'Nadira Maysa Suryanto', bank: 'BCA', joinDate: '08 Sep 2023', status: 'permanen' },
 
   // D360
-  { name: 'Syaiful Anam', dailyRate: 204800, manager: 'Top M', jabatan: 'Information Systems Manager', tunjanganJabatan: 0, sumberDana: 'D360', rekening: '3630056372', atasNamaRekening: 'Syaiful Anam', bank: 'BCA', joinDate: '13 Oct 2020', status: 'permanen' },
-  { name: 'Nadya Ambarwati Hariyanto', dailyRate: 100000, manager: 'Nadira Maysa Suryanto', jabatan: 'Digital Content Spesialist', tunjanganJabatan: 0, sumberDana: 'D360', rekening: '7205253441', atasNamaRekening: 'Nadya Ambarwati Hariyanto', bank: 'BCA', joinDate: '12 Aug 2024', status: 'permanen' },
-  { name: 'Galuh Anjali Puspitasari', dailyRate: 80000, manager: 'Nadira Maysa Suryanto', jabatan: 'Content Creator', tunjanganJabatan: 0, sumberDana: 'D360', rekening: '1710010616954', atasNamaRekening: 'Galuh Anjali Puspitasari', bank: 'mandiri', joinDate: '05 May 2025', status: 'permanen' },
-
-  // Staff without sumberDana (will not show in tabs)
-  { name: 'M Sadiq Djafaar Noeh', dailyRate: 60000, manager: 'Widia Novitasari', jabatan: 'Operator Jersey', tunjanganJabatan: 0, joinDate: '', status: 'permanen' },
-  { name: 'Titin', dailyRate: 150000, manager: 'Widia Novitasari', jabatan: 'Embordiery', tunjanganJabatan: 0, joinDate: '18 Aug 2022', status: 'permanen' },
-  { name: 'Bahriyah Nurjannah', dailyRate: 150000, manager: 'Widia Novitasari', jabatan: 'Staff', tunjanganJabatan: 0, joinDate: '', status: 'permanen' },
-  { name: 'Ade Andreans S', dailyRate: 150000, manager: 'Widia Novitasari', jabatan: 'Staff', tunjanganJabatan: 0, joinDate: '', status: 'permanen' },
-]
+  { name: 'Syaiful Anam', dailyRate: 204800, manager: 'Top M', jabatan: 'Information Systems Manager', tunjanganJabatan: 0, insentif: 0, sumberDana: 'D360', rekening: '3630056372', atasNamaRekening: 'Syaiful Anam', bank: 'BCA', joinDate: '13 Oct 2020', status: 'permanen' },
+  { name: 'Nadya Ambarwati Hariyanto', dailyRate: 100000, manager: 'Nadira Maysa Suryanto', jabatan: 'Digital Content Spesialist', tunjanganJabatan: 0, insentif: 0, sumberDana: 'D360', rekening: '7205253441', atasNamaRekening: 'Nadya Ambarwati Hariyanto', bank: 'BCA', joinDate: '12 Aug 2024', status: 'permanen' },
+  { name: 'Galuh Anjali Puspitasari', dailyRate: 80000, manager: 'Nadira Maysa Suryanto', jabatan: 'Content Creator', tunjanganJabatan: 0, insentif: 0, sumberDana: 'D360', rekening: '1710010616954', atasNamaRekening: 'Galuh Anjali Puspitasari', bank: 'mandiri', joinDate: '05 May 2025', status: 'permanen' },
+  ]
 
 const UANG_MAKAN_PER_HARI = 12000
 const POTONGAN_TERLAMBAT = 6000
@@ -796,8 +790,9 @@ export default function Home() {
       const gajiPokok = totalHariKerja * gajiPerHari
       const uangMakan = hariMakan * UANG_MAKAN_PER_HARI
       const tunjanganJabatan = staffConfig?.tunjanganJabatan || 0
+      const insentif = staffConfig?.insentif || 0
       const pinjaman = staffConfig?.pinjaman || 0
-      const totalGaji = gajiPokok + uangMakan - potonganTerlambat + totalLembur + tunjanganJabatan - pinjaman
+      const totalGaji = gajiPokok + uangMakan - potonganTerlambat + totalLembur + tunjanganJabatan + insentif - pinjaman
 
       slips.push({
         nama,
@@ -1209,7 +1204,14 @@ export default function Home() {
                         <span className="font-medium bg-yellow-200 px-1">{(staffConfig?.tunjanganJabatan || 0).toLocaleString('id-ID')}</span>
                       </div>
                     </div>
-                  </div>
+                    <div className="flex justify-between">
+                      <span>Insentif</span>
+                      <div className="flex items-center gap-0.5">
+                        <span className="text-[8px]">Rp</span>
+                        <span className="font-medium bg-yellow-200 px-1">{(staffConfig?.insentif || 0).toLocaleString('id-ID')}</span>
+                      </div>
+                    </div>
+                      </div>
                 </div>
 
                 {/* Potongan Box */}
@@ -1245,7 +1247,7 @@ export default function Home() {
               <div className="flex justify-between items-center mb-3 text-[11px]">
                 <span className="font-bold">Total</span>
                 <div className="flex items-center gap-1">
-                  <span className="font-bold bg-yellow-200 px-2">Rp {(slip.gajiPokok + slip.totalLembur + slip.uangMakan + (staffConfig?.tunjanganJabatan || 0) - (staffConfig?.pinjaman || 0)).toLocaleString('id-ID')}</span>
+                  <span className="font-bold bg-yellow-200 px-2">Rp {(slip.gajiPokok + slip.totalLembur + slip.uangMakan + (staffConfig?.tunjanganJabatan || 0) + (staffConfig?.insentif || 0) - (staffConfig?.pinjaman || 0)).toLocaleString('id-ID')}</span>
                 </div>
               </div>
 
@@ -1256,7 +1258,7 @@ export default function Home() {
                     <span className="font-bold">Penerimaan Bersih =</span>
                     <div className="flex items-center gap-1">
                       <span>Rp</span>
-                      <span className="font-bold">{slip.totalGaji.toLocaleString('id-ID')}</span>
+                      <span className="font-bold">{(slip.gajiPokok + slip.totalLembur + slip.uangMakan + (staffConfig?.tunjanganJabatan || 0) + (staffConfig?.insentif || 0) - (staffConfig?.pinjaman || 0)).toLocaleString('id-ID')}</span>
                     </div>
                   </div>
                 </div>
@@ -1278,7 +1280,7 @@ export default function Home() {
                         <span className="font-bold">Transfer {staffConfig.sumberDana} =</span>
                         <div className="flex items-center gap-1">
                           <span>Rp</span>
-                          <span className="font-bold">{(slip.totalGaji - staffConfig.vgiAmount).toLocaleString('id-ID')}</span>
+                          <span className="font-bold">{((slip.gajiPokok + slip.totalLembur + slip.uangMakan + (staffConfig?.tunjanganJabatan || 0) + (staffConfig?.insentif || 0) - (staffConfig?.pinjaman || 0)) - staffConfig.vgiAmount).toLocaleString('id-ID')}</span>
                         </div>
                       </div>
                     </div>
@@ -1289,7 +1291,7 @@ export default function Home() {
                       <span className="font-bold">Penerimaan Transfer =</span>
                       <div className="flex items-center gap-1">
                         <span>Rp</span>
-                        <span className="font-bold">{slip.totalGaji.toLocaleString('id-ID')}</span>
+                        <span className="font-bold">{(slip.gajiPokok + slip.totalLembur + slip.uangMakan + (staffConfig?.tunjanganJabatan || 0) + (staffConfig?.insentif || 0) - (staffConfig?.pinjaman || 0)).toLocaleString('id-ID')}</span>
                       </div>
                     </div>
                   </div>
@@ -1376,61 +1378,66 @@ export default function Home() {
                       </tr>
                     </thead>
                     <tbody>
-                      {slip.absensi.map((row, i) => {
-                        // Parse izin information from tanggal column
-                        const izinInfo = parseIzinFromTanggal(row.Tanggal)
-                        const hasIzin = izinInfo.isIzin || (row.Izin && row.Izin.trim() !== '')
-                        const dayName = getDayName(row.Tanggal)
-                        const isLibur = row.Masuk === 'Libur' || isSunday(row.Tanggal)
-                        const isAbsen = row.Masuk === 'Absen'
+                      {(() => {
+                        let workingDayNumber = 0
+                        return slip.absensi.map((row, i) => {
+                          // Parse izin information from tanggal column
+                          const izinInfo = parseIzinFromTanggal(row.Tanggal)
+                          const hasIzin = izinInfo.isIzin || (row.Izin && row.Izin.trim() !== '')
+                          const dayName = getDayName(row.Tanggal)
+                          const isLibur = row.Masuk === 'Libur' || isSunday(row.Tanggal)
+                          const isAbsen = row.Masuk === 'Absen'
 
-                        let bgColor = ''
-                        let keterangan = ''
+                          // Only increment number if not libur/absen
+                          const displayNumber = (isLibur || isAbsen) ? '-' : ++workingDayNumber
 
-                        if (isLibur) {
-                          bgColor = 'bg-red-200' // Libur (red background)
-                          keterangan = 'Libur'
-                        } else if (isAbsen) {
-                          bgColor = 'bg-red-200' // Absen (red background)
-                          keterangan = 'Absen'
-                        } else if (hasIzin) {
-                          // Check if uang makan is cut for this izin
-                          const jenisIzin = izinInfo.isIzin ? izinInfo.jenisIzin : row.Izin?.toLowerCase() || ''
-                          const alasan = izinInfo.isIzin ? izinInfo.alasan : ''
-                          let getsUangMakan = shouldGetUangMakanForIzin(jenisIzin, alasan, isManager(staffSalaries.find(s => s.name === slip.nama)?.jabatan || ''))
+                          let bgColor = ''
+                          let keterangan = ''
 
-                          // Even with izin, cut uang makan if pulang is exactly 17:00 (but not on Saturday)
-                          if (getsUangMakan && isEarlyCheckout(row.Pulang, true) && dayName !== 'Sab') {
-                            getsUangMakan = false
-                          }
+                          if (isLibur) {
+                            bgColor = 'bg-red-200' // Libur (red background)
+                            keterangan = 'Libur'
+                          } else if (isAbsen) {
+                            bgColor = 'bg-yellow-200' // Absen (yellow background)
+                            keterangan = 'Absen'
+                          } else if (hasIzin) {
+                            // Check if uang makan is cut for this izin
+                            const jenisIzin = izinInfo.isIzin ? izinInfo.jenisIzin : row.Izin?.toLowerCase() || ''
+                            const alasan = izinInfo.isIzin ? izinInfo.alasan : ''
+                            let getsUangMakan = shouldGetUangMakanForIzin(jenisIzin, alasan, isManager(staffSalaries.find(s => s.name === slip.nama)?.jabatan || ''))
 
-                          if (!getsUangMakan) {
-                            bgColor = 'bg-yellow-200' // Uang makan cut
-                          } else {
-                            bgColor = 'bg-gray-100' // Uang makan not cut
-                          }
-
-                          keterangan = row.Izin || jenisIzin || alasan || 'Izin'
-                        } else if (isLateOneHourOrMore(row.Terlambat) || (isEarlyCheckout(row.Pulang, false) && dayName !== 'Sab')) {
-                          bgColor = 'bg-yellow-200' // Uang makan cut (late/early)
-                          if (row.Terlambat !== '00:00') {
-                            keterangan = `Terlambat ${row.Terlambat}`
-                          } else {
-                            // Check if pulang is exactly 17:00
-                            if (row.Pulang === '17:00') {
-                              keterangan = 'tidak check out'
-                            } else if (dayName !== 'Sab') {
-                              keterangan = 'Pulang Awal'
+                            // Even with izin, cut uang makan if pulang is exactly 17:00 (but not on Saturday)
+                            if (getsUangMakan && isEarlyCheckout(row.Pulang, true) && dayName !== 'Sab') {
+                              getsUangMakan = false
                             }
-                          }
-                        } else if (row.Masuk === '00:00' && row.Pulang === '00:00') {
-                          bgColor = 'bg-red-200' // Not masuk (libur)
-                          keterangan = 'Tidak Masuk'
-                        }
 
-                        return (
-                          <tr key={i} className={bgColor}>
-                            <td className="border border-black px-1 py-1 text-center">{i + 1}</td>
+                            if (!getsUangMakan) {
+                              bgColor = 'bg-yellow-200' // Uang makan cut
+                            } else {
+                              bgColor = 'bg-gray-100' // Uang makan not cut
+                            }
+
+                            keterangan = row.Izin || jenisIzin || alasan || 'Izin'
+                          } else if (isLateOneHourOrMore(row.Terlambat) || (isEarlyCheckout(row.Pulang, false) && dayName !== 'Sab')) {
+                            bgColor = 'bg-yellow-200' // Uang makan cut (late/early)
+                            if (row.Terlambat !== '00:00') {
+                              keterangan = `Terlambat ${row.Terlambat}`
+                            } else {
+                              // Check if pulang is exactly 17:00 (but not on Saturday - Saturday normal end is 15:00)
+                              if (row.Pulang === '17:00' && dayName !== 'Sab') {
+                                keterangan = 'tidak check out'
+                              } else if (dayName !== 'Sab') {
+                                keterangan = 'Pulang Awal'
+                              }
+                            }
+                          } else if (row.Masuk === '00:00' && row.Pulang === '00:00') {
+                            bgColor = 'bg-red-200' // Not masuk (libur)
+                            keterangan = 'Tidak Masuk'
+                          }
+
+                          return (
+                            <tr key={i} className={bgColor}>
+                              <td className="border border-black px-1 py-1 text-center">{displayNumber}</td>
                             <td className="border border-black px-1 py-1 text-center font-bold">{dayName}</td>
                             <td className="border border-black px-1 py-1 text-center">{row.Tanggal}</td>
                             <td className="border border-black px-1 py-1 text-center">{isLibur || isAbsen ? row.Masuk : row.Masuk}</td>
@@ -1438,7 +1445,8 @@ export default function Home() {
                             <td className="border border-black px-1 py-1 text-center text-[8px]">{keterangan}</td>
                           </tr>
                         )
-                      })}
+                      })
+                    })()}
                     </tbody>
                   </table>
                 </div>
@@ -1449,7 +1457,7 @@ export default function Home() {
       </div>
 
       {/* Bank Account Information - Outside copy container */}
-      {(staffConfig?.rekening || staffConfig?.atasNamaRekening || staffConfig?.bank) && (
+      {(staffConfig?.rekening || staffConfig?.atasNamaRekening || staffConfig?.bank || true) && (
         <div className="max-w-[900px] mx-auto mt-2 bg-white p-4 border-2 border-black" style={{fontFamily: 'Arial, sans-serif'}}>
           <h3 className="font-bold mb-2 text-[11px] underline">Informasi Rekening</h3>
           <div className="space-y-1 text-[10px]">
@@ -1474,6 +1482,27 @@ export default function Home() {
                 <span className="font-bold">{staffConfig.atasNamaRekening}</span>
               </div>
             )}
+            <div className="flex items-center mt-3 pt-3 border-t border-gray-300">
+              <span className="w-24 font-medium">💸 Pinjaman</span>
+              <span className="mr-2">:</span>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px]">Rp</span>
+                <input
+                  type="number"
+                  value={staffConfig?.pinjaman || 0}
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value) || 0
+                    const updatedStaff = staffSalaries.map(s =>
+                      s.name === slip.nama ? {...s, pinjaman: value} : s
+                    )
+                    setStaffSalaries(updatedStaff)
+                  }}
+                  className="w-32 px-2 py-1 border-2 border-red-300 rounded focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all outline-none font-mono text-[10px]"
+                  placeholder="0"
+                />
+                <span className="text-xs text-gray-500">(akan dipotong dari gaji)</span>
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -1823,12 +1852,12 @@ export default function Home() {
 
                     {/* Insentif */}
                     <div>
-                      <label className="block text-sm font-bold text-gray-700 mb-2">🎁 Insentif</label>
+                      <label className="block text-sm font-bold text-gray-700 mb-2">💵 Insentif</label>
                       <input
                         type="number"
                         value={editingStaff.insentif || 0}
                         onChange={(e) => setEditingStaff({...editingStaff, insentif: parseInt(e.target.value) || 0})}
-                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all outline-none font-mono"
+                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all outline-none font-mono"
                         placeholder="0"
                       />
                     </div>
@@ -1860,19 +1889,6 @@ export default function Home() {
                         placeholder="0 (optional)"
                       />
                       <p className="text-xs text-gray-500 mt-1">Leave 0 if no VGI</p>
-                    </div>
-
-                    {/* Pinjaman */}
-                    <div>
-                      <label className="block text-sm font-bold text-gray-700 mb-2">💸 Pinjaman</label>
-                      <input
-                        type="number"
-                        value={editingStaff.pinjaman || 0}
-                        onChange={(e) => setEditingStaff({...editingStaff, pinjaman: parseInt(e.target.value) || 0})}
-                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all outline-none font-mono"
-                        placeholder="0 (akan dipotong dari gaji)"
-                      />
-                      <p className="text-xs text-gray-500 mt-1">Akan dikurangi dari total gaji</p>
                     </div>
 
                     {/* Rekening */}
