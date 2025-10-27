@@ -10,7 +10,11 @@ interface AbsensiRow {
   Masuk: string
   Pulang: string
   Terlambat: string
-  'Jam Kerja': string
+  'Total Jam Kerja'?: string // New format
+  'Jam Kerja'?: string // Old format
+  'Total Lembur (Jam)'?: string
+  '✅ Lembur'?: string
+  '❌ Lembur'?: string
   'Status Karyawan'?: string
 }
 
@@ -85,50 +89,80 @@ interface StaffSalary {
   rekening?: string
   atasNamaRekening?: string
   bank?: string
+  joinDate?: string
+  status?: string
+}
+
+// Payroll rules settings
+interface PayrollSettings {
+  potongUangMakan: {
+    lateMoreThan1Hour: boolean
+    checkoutAt17: boolean
+    checkoutBefore17: boolean
+    absenManager: boolean
+    absenNonManager: boolean
+  }
+  potongGajiHarian: {
+    absenNonManager: boolean
+  }
+}
+
+const DEFAULT_PAYROLL_SETTINGS: PayrollSettings = {
+  potongUangMakan: {
+    lateMoreThan1Hour: true,
+    checkoutAt17: true,
+    checkoutBefore17: true,
+    absenManager: false,
+    absenNonManager: true
+  },
+  potongGajiHarian: {
+    absenNonManager: true
+  }
 }
 
 const DEFAULT_STAFF_SALARIES: StaffSalary[] = [
   // SKG + VGI
-  { name: 'Budi Suryanto', dailyRate: 150000, manager: 'Top M', jabatan: 'CEO', tunjanganJabatan: 1000000, sumberDana: 'SKG', vgiAmount: 13500000, rekening: '3250494563', atasNamaRekening: 'Budi Suryanto', bank: 'BCA' },
-  { name: 'Mucharom Rusdiana', dailyRate: 362800, manager: 'Top M', jabatan: 'Bussiness Development Manager', tunjanganJabatan: 1000000, sumberDana: 'SKG', vgiAmount: 2700000, rekening: '0891062124', atasNamaRekening: 'Mucharom Rusdiana', bank: 'BCA' },
-  { name: 'M. Bagus Suryo Laksono', dailyRate: 158400, manager: 'Mucharom Rusdiana', jabatan: 'Logistic & Supply Chain Manager', tunjanganJabatan: 200000, sumberDana: 'SKG', vgiAmount: 2500000, rekening: '0500319950', atasNamaRekening: 'M Bagus Suryo Laksono', bank: 'BCA' },
-  { name: 'Rahmat Ragil Hidayat', dailyRate: 86400, manager: 'Mucharom Rusdiana', jabatan: 'Office General Admin', tunjanganJabatan: 250000, sumberDana: 'SKG', rekening: '8945355677', atasNamaRekening: 'Rahmat Ragil Hidayat', bank: 'BCA' },
-  { name: 'Rizka Maulidah', dailyRate: 100000, manager: 'Diah Ayu Fajar Cahyaningrum', jabatan: 'Sales & CS', tunjanganJabatan: 0, sumberDana: 'SKG', rekening: '3251876655', atasNamaRekening: 'Rizka Maulidah', bank: 'BCA' },
-  { name: 'Laili Nisaatus Sholihah', dailyRate: 80000, manager: 'Mucharom Rusdiana', jabatan: 'General Admin MO', tunjanganJabatan: 0, sumberDana: 'SKG', rekening: '4720445609', atasNamaRekening: 'Laili Nisaatus Sholihah', bank: 'BCA' },
-  { name: 'Fitri Nurcomariah', dailyRate: 80000, manager: 'Mucharom Rusdiana', jabatan: 'Designer Product', tunjanganJabatan: 0, sumberDana: 'SKG', rekening: '8221549180', atasNamaRekening: 'Fitri Nurcomariah', bank: 'BCA' },
-  { name: 'Fifien Ayu Ramadhani', dailyRate: 80000, manager: 'Diah Ayu Fajar Cahyaningrum', jabatan: 'Sales & CS', tunjanganJabatan: 0, sumberDana: 'SKG', rekening: '5120561091', atasNamaRekening: 'Fifien Ayu Ramadhani', bank: 'BCA' },
-  { name: 'Atika Permatasari', dailyRate: 68000, manager: 'Diah Ayu Fajar Cahyaningrum', jabatan: 'Sales & CS', tunjanganJabatan: 0, sumberDana: 'SKG', rekening: '6265073232', atasNamaRekening: 'Atika Permata Sar', bank: 'BCA' },
+  { name: 'Budi Suryanto', dailyRate: 150000, manager: 'Top M', jabatan: 'CEO', tunjanganJabatan: 1000000, sumberDana: 'SKG', vgiAmount: 13500000, rekening: '3250494563', atasNamaRekening: 'Budi Suryanto', bank: 'BCA', joinDate: '18 Sep 2018', status: 'permanen' },
+  { name: 'Mucharom Rusdiana', dailyRate: 362800, manager: 'Top M', jabatan: 'Bussiness Development Manager', tunjanganJabatan: 1000000, sumberDana: 'SKG', vgiAmount: 2700000, rekening: '0891062124', atasNamaRekening: 'Mucharom Rusdiana', bank: 'BCA', joinDate: '08 Dec 2016', status: 'permanen' },
+  { name: 'M. Bagus Suryo Laksono', dailyRate: 158400, manager: 'Mucharom Rusdiana', jabatan: 'Logistic & Supply Chain Manager', tunjanganJabatan: 200000, sumberDana: 'SKG', vgiAmount: 2500000, rekening: '0500319950', atasNamaRekening: 'M Bagus Suryo Laksono', bank: 'BCA', joinDate: '04 Jan 2021', status: 'permanen' },
+  { name: 'Rahmat Ragil Hidayat', dailyRate: 86400, manager: 'Mucharom Rusdiana', jabatan: 'Office General Admin', tunjanganJabatan: 250000, sumberDana: 'SKG', rekening: '8945355677', atasNamaRekening: 'Rahmat Ragil Hidayat', bank: 'BCA', joinDate: '21 Feb 2024', status: 'permanen' },
+  { name: 'Rizka Maulidah', dailyRate: 100000, manager: 'Diah Ayu Fajar Cahyaningrum', jabatan: 'Sales & CS', tunjanganJabatan: 0, sumberDana: 'SKG', rekening: '3251876655', atasNamaRekening: 'Rizka Maulidah', bank: 'BCA', joinDate: '15 Nov 2023', status: 'permanen' },
+  { name: 'Laili Nisaatus Sholihah', dailyRate: 80000, manager: 'Mucharom Rusdiana', jabatan: 'General Admin MO', tunjanganJabatan: 0, sumberDana: 'SKG', rekening: '4720445609', atasNamaRekening: 'Laili Nisaatus Sholihah', bank: 'BCA', joinDate: '12 Sep 24', status: 'permanen' },
+  { name: 'Fitri Nurcomariah', dailyRate: 80000, manager: 'Mucharom Rusdiana', jabatan: 'Designer Product', tunjanganJabatan: 0, sumberDana: 'SKG', rekening: '8221549180', atasNamaRekening: 'Fitri Nurcomariah', bank: 'BCA', joinDate: '25 Nov 2024', status: 'permanen' },
+  { name: 'Fifien Ayu Ramadhani', dailyRate: 80000, manager: 'Diah Ayu Fajar Cahyaningrum', jabatan: 'Sales & CS', tunjanganJabatan: 0, sumberDana: 'SKG', rekening: '5120561091', atasNamaRekening: 'Fifien Ayu Ramadhani', bank: 'BCA', joinDate: '28 Apr 2025', status: 'permanen' },
+  { name: 'Atika Permatasari', dailyRate: 68000, manager: 'Diah Ayu Fajar Cahyaningrum', jabatan: 'Sales & CS', tunjanganJabatan: 0, sumberDana: 'SKG', rekening: '6265073232', atasNamaRekening: 'Atika Permata Sar', bank: 'BCA', joinDate: '25 Aug 2025', status: 'permanen' },
 
   // RCP + VGI
-  { name: 'Eko Prastio', dailyRate: 180500, manager: 'Widia Novitasari', jabatan: 'Production Jersey', tunjanganJabatan: 0, sumberDana: 'RCP', vgiAmount: 2600000, rekening: '0882343331', atasNamaRekening: 'Eko Prastio', bank: 'BCA' },
-  { name: 'Tri Hariyono', dailyRate: 129600, manager: 'Widia Novitasari', jabatan: 'SPV Production & QC', tunjanganJabatan: 500000, sumberDana: 'RCP', rekening: '0881849126', atasNamaRekening: 'Tri Hariyono', bank: 'BCA' },
-  { name: 'Tata Wibowo', dailyRate: 107200, manager: 'Widia Novitasari', jabatan: 'Embordiery', tunjanganJabatan: 0, sumberDana: 'RCP', rekening: '4610545365', atasNamaRekening: 'Tata Wibowo', bank: 'BCA' },
-  { name: 'Achmad Baidowi', dailyRate: 115200, manager: 'Widia Novitasari', jabatan: 'Cutting Spesialist', tunjanganJabatan: 500000, sumberDana: 'RCP', rekening: '4610484561', atasNamaRekening: 'Achmad Baidowi', bank: 'BCA' },
-  { name: 'Solikatin', dailyRate: 98000, manager: 'Widia Novitasari', jabatan: 'Embordiery', tunjanganJabatan: 0, sumberDana: 'RCP', rekening: '3251805529', atasNamaRekening: 'Solikatin', bank: 'BCA' },
-  { name: 'Mita Nur Fitriani', dailyRate: 91600, manager: 'Widia Novitasari', jabatan: 'Workshop General Admin', tunjanganJabatan: 0, sumberDana: 'RCP', rekening: '5060409899', atasNamaRekening: 'Mita NurFitriani', bank: 'BCA' },
-  { name: 'Kasianto', dailyRate: 82000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0, sumberDana: 'RCP', rekening: '3251904764', atasNamaRekening: 'Kasianto', bank: 'BCA' },
-  { name: 'Nurva Dina Amalianti', dailyRate: 60000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0, sumberDana: 'RCP', rekening: '3251938642', atasNamaRekening: 'Nurva Dina Amalianti', bank: 'BCA' },
-  { name: 'Nabila Maulidya Putri', dailyRate: 80000, manager: 'Widia Novitasari', jabatan: 'Operator Jersey', tunjanganJabatan: 0, sumberDana: 'RCP', rekening: '1841653284', atasNamaRekening: 'Nabila Maulidya Putri', bank: 'BCA' },
-  { name: 'Widodo Saputra', dailyRate: 56000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0, sumberDana: 'RCP', rekening: '3252045047', atasNamaRekening: 'Hesti Dwi Anggraeni', bank: 'BCA' },
-  { name: 'Natasha Dwi Aprilia', dailyRate: 48000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0, sumberDana: 'RCP', rekening: '6670880387', atasNamaRekening: 'Natasha Dwi aprilia', bank: 'BCA' },
-  { name: 'Anis Munawaroh', dailyRate: 40000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0, sumberDana: 'RCP' },
-  { name: 'Azmil Qurrota A\'yun', dailyRate: 40000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0, sumberDana: 'RCP' },
+  { name: 'Eko Prastio', dailyRate: 180500, manager: 'Widia Novitasari', jabatan: 'Production Jersey', tunjanganJabatan: 0, sumberDana: 'RCP', vgiAmount: 2600000, rekening: '0882343331', atasNamaRekening: 'Eko Prastio', bank: 'BCA', joinDate: '26 Nov 2018', status: 'permanen' },
+  { name: 'Tri Hariyono', dailyRate: 129600, manager: 'Widia Novitasari', jabatan: 'SPV Production & QC', tunjanganJabatan: 500000, sumberDana: 'RCP', rekening: '0881849126', atasNamaRekening: 'Tri Hariyono', bank: 'BCA', joinDate: '04 Feb 2020', status: 'permanen' },
+  { name: 'Tata Wibowo', dailyRate: 107200, manager: 'Widia Novitasari', jabatan: 'Embordiery', tunjanganJabatan: 0, sumberDana: 'RCP', rekening: '4610545365', atasNamaRekening: 'Tata Wibowo', bank: 'BCA', joinDate: '29 Jan 2020', status: 'permanen' },
+  { name: 'Achmad Baidowi', dailyRate: 115200, manager: 'Widia Novitasari', jabatan: 'Cutting Spesialist', tunjanganJabatan: 500000, sumberDana: 'RCP', rekening: '4610484561', atasNamaRekening: 'Achmad Baidowi', bank: 'BCA', joinDate: '13 Sep 2021', status: 'permanen' },
+  { name: 'Solikatin', dailyRate: 98000, manager: 'Widia Novitasari', jabatan: 'Embordiery', tunjanganJabatan: 0, sumberDana: 'RCP', rekening: '3251805529', atasNamaRekening: 'Solikatin', bank: 'BCA', joinDate: '18 Aug 2022', status: 'permanen' },
+  { name: 'Mita Nur Fitriani', dailyRate: 91600, manager: 'Widia Novitasari', jabatan: 'Workshop General Admin', tunjanganJabatan: 0, sumberDana: 'RCP', rekening: '5060409899', atasNamaRekening: 'Mita NurFitriani', bank: 'BCA', joinDate: '02 Feb 2023', status: 'permanen' },
+  { name: 'Kasianto', dailyRate: 82000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0, sumberDana: 'RCP', rekening: '3251904764', atasNamaRekening: 'Kasianto', bank: 'BCA', joinDate: '24 Jul 2023', status: 'permanen' },
+  { name: 'Nurva Dina Amalianti', dailyRate: 60000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0, sumberDana: 'RCP', rekening: '3251938642', atasNamaRekening: 'Nurva Dina Amalianti', bank: 'BCA', joinDate: '21 May 2024', status: 'permanen' },
+  { name: 'Nabila Maulidya Putri', dailyRate: 80000, manager: 'Widia Novitasari', jabatan: 'Operator Jersey', tunjanganJabatan: 0, sumberDana: 'RCP', rekening: '1841653284', atasNamaRekening: 'Nabila Maulidya Putri', bank: 'BCA', joinDate: '06 Nov 2024', status: 'permanen' },
+  { name: 'Widodo Saputra', dailyRate: 56000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0, sumberDana: 'RCP', rekening: '3252045047', atasNamaRekening: 'Hesti Dwi Anggraeni', bank: 'BCA', joinDate: '07 Jan 2025', status: 'permanen' },
+  { name: 'Natasha Dwi Aprilia', dailyRate: 48000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0, sumberDana: 'RCP', rekening: '6670880387', atasNamaRekening: 'Natasha Dwi aprilia', bank: 'BCA', joinDate: '06 Aug 2025', status: 'permanen' },
+  { name: 'Anis Munawaroh', dailyRate: 40000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0, sumberDana: 'RCP', status: 'permanen' },
+  { name: 'Azmil Qurrota A\'yun', dailyRate: 40000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0, sumberDana: 'RCP', status: 'permanen' },
 
   // KSP + VGI
-  { name: 'Widia Novitasari', dailyRate: 196800, manager: 'Top M', jabatan: 'Manager Production', tunjanganJabatan: 800000, sumberDana: 'KSP', rekening: '0882211043', atasNamaRekening: 'Widia Novitasari', bank: 'BCA' },
-  { name: 'Diah Ayu Fajar Cahyaningrum', dailyRate: 146000, manager: 'Top M', jabatan: 'Sales & Client Relations Manager', tunjanganJabatan: 400000, sumberDana: 'KSP', vgiAmount: 2500000, rekening: '0882211060', atasNamaRekening: 'Diah Ayu Cahyaningrum', bank: 'BCA' },
-  { name: 'Nadira Maysa Suryanto', dailyRate: 132000, manager: 'Top M', jabatan: 'Marketing & Partnerships Manager', tunjanganJabatan: 500000, sumberDana: 'KSP', rekening: '0640674296', atasNamaRekening: 'Nadira Maysa Suryanto', bank: 'BCA' },
+  { name: 'Widia Novitasari', dailyRate: 196800, manager: 'Top M', jabatan: 'Manager Production', tunjanganJabatan: 800000, sumberDana: 'KSP', rekening: '0882211043', atasNamaRekening: 'Widia Novitasari', bank: 'BCA', joinDate: '07 Feb 19', status: 'permanen' },
+  { name: 'Diah Ayu Fajar Cahyaningrum', dailyRate: 146000, manager: 'Top M', jabatan: 'Sales & Client Relations Manager', tunjanganJabatan: 400000, sumberDana: 'KSP', vgiAmount: 2500000, rekening: '0882211060', atasNamaRekening: 'Diah Ayu Cahyaningrum', bank: 'BCA', joinDate: '26 Aug 2019', status: 'permanen' },
+  { name: 'Nadira Maysa Suryanto', dailyRate: 132000, manager: 'Top M', jabatan: 'Marketing & Partnerships Manager', tunjanganJabatan: 500000, sumberDana: 'KSP', rekening: '0640674296', atasNamaRekening: 'Nadira Maysa Suryanto', bank: 'BCA', joinDate: '08 Sep 2023', status: 'permanen' },
 
   // D360
-  { name: 'Syaiful Anam', dailyRate: 204800, manager: 'Top M', jabatan: 'Information Systems Manager', tunjanganJabatan: 0, sumberDana: 'D360', rekening: '3630056372', atasNamaRekening: 'Syaiful Anam', bank: 'BCA' },
-  { name: 'Nadya Ambarwati Hariyanto', dailyRate: 100000, manager: 'Nadira Maysa Suryanto', jabatan: 'Digital Content Spesialist', tunjanganJabatan: 0, sumberDana: 'D360', rekening: '7205253441', atasNamaRekening: 'Nadya Ambarwati Hariyanto', bank: 'BCA' },
-  { name: 'Galuh Anjali Puspitasari', dailyRate: 80000, manager: 'Nadira Maysa Suryanto', jabatan: 'Content Creator', tunjanganJabatan: 0, sumberDana: 'D360', rekening: '1710010616954', atasNamaRekening: 'Galuh Anjali Puspitasari', bank: 'mandiri' },
+  { name: 'Syaiful Anam', dailyRate: 204800, manager: 'Top M', jabatan: 'Information Systems Manager', tunjanganJabatan: 0, sumberDana: 'D360', rekening: '3630056372', atasNamaRekening: 'Syaiful Anam', bank: 'BCA', joinDate: '13 Oct 2020', status: 'permanen' },
+  { name: 'Nadya Ambarwati Hariyanto', dailyRate: 100000, manager: 'Nadira Maysa Suryanto', jabatan: 'Digital Content Spesialist', tunjanganJabatan: 0, sumberDana: 'D360', rekening: '7205253441', atasNamaRekening: 'Nadya Ambarwati Hariyanto', bank: 'BCA', joinDate: '12 Aug 2024', status: 'permanen' },
+  { name: 'Galuh Anjali Puspitasari', dailyRate: 80000, manager: 'Nadira Maysa Suryanto', jabatan: 'Content Creator', tunjanganJabatan: 0, sumberDana: 'D360', rekening: '1710010616954', atasNamaRekening: 'Galuh Anjali Puspitasari', bank: 'mandiri', joinDate: '05 May 2025', status: 'permanen' },
 
   // Staff without sumberDana (will not show in tabs)
-  { name: 'M Sadiq Djafaar Noeh', dailyRate: 60000, manager: 'Widia Novitasari', jabatan: 'Operator Jersey', tunjanganJabatan: 0 },
-  { name: 'Bahriyah Nurjannah', dailyRate: 150000, manager: 'Widia Novitasari', jabatan: 'Staff', tunjanganJabatan: 0 },
-  { name: 'Ade Andreans S', dailyRate: 150000, manager: 'Widia Novitasari', jabatan: 'Staff', tunjanganJabatan: 0 },
-  { name: 'Alek Sugianto', dailyRate: 150000, manager: 'Widia Novitasari', jabatan: 'Staff', tunjanganJabatan: 0 }
+  { name: 'M Sadiq Djafaar Noeh', dailyRate: 60000, manager: 'Widia Novitasari', jabatan: 'Operator Jersey', tunjanganJabatan: 0, joinDate: '', status: 'permanen' },
+  { name: 'Titin', dailyRate: 150000, manager: 'Widia Novitasari', jabatan: 'Embordiery', tunjanganJabatan: 0, joinDate: '18 Aug 2022', status: 'permanen' },
+  { name: 'Bahriyah Nurjannah', dailyRate: 150000, manager: 'Widia Novitasari', jabatan: 'Staff', tunjanganJabatan: 0, joinDate: '', status: 'permanen' },
+  { name: 'Ade Andreans S', dailyRate: 150000, manager: 'Widia Novitasari', jabatan: 'Staff', tunjanganJabatan: 0, joinDate: '', status: 'permanen' },
+  { name: 'Alek Sugianto', dailyRate: 150000, manager: 'Widia Novitasari', jabatan: 'Staff', tunjanganJabatan: 0, status: 'permanen' }
 ]
 
 const UANG_MAKAN_PER_HARI = 12000
@@ -179,6 +213,31 @@ const convertCommaDecimal = (value: string | number): number => {
   if (typeof value === 'number') return value
   if (!value || value === '') return 0
   return parseFloat(value.toString().replace(',', '.'))
+}
+
+// Function to get day name from date string (DD/MM/YYYY)
+const getDayName = (dateStr: string): string => {
+  if (!dateStr) return ''
+  try {
+    const [day, month, year] = dateStr.split('/').map(Number)
+    const date = new Date(year, month - 1, day)
+    const days = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab']
+    return days[date.getDay()]
+  } catch {
+    return ''
+  }
+}
+
+// Function to check if date is Sunday (auto libur)
+const isSunday = (dateStr: string): boolean => {
+  if (!dateStr) return false
+  try {
+    const [day, month, year] = dateStr.split('/').map(Number)
+    const date = new Date(year, month - 1, day)
+    return date.getDay() === 0 // 0 = Sunday
+  } catch {
+    return false
+  }
 }
 
 // Function to parse izin information from tanggal column
@@ -310,6 +369,8 @@ export default function Home() {
   const [passwordInput, setPasswordInput] = useState('')
   const [staffSalaries, setStaffSalaries] = useState<StaffSalary[]>(DEFAULT_STAFF_SALARIES)
   const [editingStaff, setEditingStaff] = useState<StaffSalary | null>(null)
+  const [payrollSettings, setPayrollSettings] = useState<PayrollSettings>(DEFAULT_PAYROLL_SETTINGS)
+  const [showSettings, setShowSettings] = useState(false)
 
   // Load staff salaries from localStorage on mount
   useEffect(() => {
@@ -318,7 +379,17 @@ export default function Home() {
       if (saved) {
         const parsed = JSON.parse(saved)
         if (Array.isArray(parsed) && parsed.length > 0) {
-          setStaffSalaries(parsed)
+          // Check if the cached data has the new fields (joinDate and status)
+          const hasNewFields = parsed.some(staff => staff.joinDate !== undefined || staff.status !== undefined)
+          if (!hasNewFields) {
+            // If cached data is missing new fields, use defaults instead
+            console.log('Cached staff data is outdated, using updated defaults')
+            setStaffSalaries(DEFAULT_STAFF_SALARIES)
+            // Save the updated data to localStorage
+            localStorage.setItem('payroll360_staff_salaries', JSON.stringify(DEFAULT_STAFF_SALARIES))
+          } else {
+            setStaffSalaries(parsed)
+          }
         }
       }
     } catch (error) {
@@ -334,6 +405,27 @@ export default function Home() {
       console.error('Error saving staff salaries to localStorage:', error)
     }
   }, [staffSalaries])
+
+  // Load payroll settings from localStorage on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('payroll360_settings')
+      if (saved) {
+        setPayrollSettings(JSON.parse(saved))
+      }
+    } catch (error) {
+      console.error('Error loading payroll settings from localStorage:', error)
+    }
+  }, [])
+
+  // Save payroll settings to localStorage whenever they change
+  useEffect(() => {
+    try {
+      localStorage.setItem('payroll360_settings', JSON.stringify(payrollSettings))
+    } catch (error) {
+      console.error('Error saving payroll settings to localStorage:', error)
+    }
+  }, [payrollSettings])
 
   const handleFileUpload = (
     file: File,
@@ -428,10 +520,10 @@ export default function Home() {
     const merged: MergedData[] = []
 
     absensiData.forEach((absen) => {
-      // Filter by Status Karyawan - only process 'permanen' and 'training', ignore 'borongan'
+      // Filter by Status Karyawan - only process 'permanen' and 'training', ignore others
       const statusKaryawan = absen['Status Karyawan']?.toLowerCase()
-      if (statusKaryawan && statusKaryawan === 'borongan') {
-        return // Skip borongan staff
+      if (statusKaryawan && (statusKaryawan === 'borongan' || statusKaryawan === 'magang' || statusKaryawan === 'kontrak')) {
+        return // Skip non-permanen and non-training staff
       }
 
       const izin = izinData.find(
@@ -581,12 +673,12 @@ export default function Home() {
 
       const isStaffManager = isManager(staffConfig?.jabatan || '')
 
-      // Special case: Budi Suryanto always gets 26 working days
+      // Special case: Budi Suryanto always gets 25 working days
       const isBudiSuryanto = nama.toLowerCase().includes('budi suryanto')
       const isAlek = nama.toLowerCase().includes('alek')
 
       if (isBudiSuryanto) {
-        totalHariKerja = 26 // Fixed 26 working days for Budi Suryanto
+        totalHariKerja = 25 // Fixed 25 working days for Budi Suryanto
       } else if (isAlek) {
         totalHariKerja = 0 // Alek gets no working days (insentif only)
       }
@@ -594,6 +686,31 @@ export default function Home() {
       // Skip absensi calculation for Budi Suryanto and Alek - they get special treatment
       if (!isBudiSuryanto && !isAlek) {
         staffAbsensi.forEach(row => {
+        // Skip Libur and Sunday entries - these don't count for anything
+        if (row.Masuk === 'Libur' || isSunday(row.Tanggal)) {
+          return // Skip this row completely
+        }
+
+        // Handle Absen based on settings
+        if (row.Masuk === 'Absen') {
+          // Check if should count as working day for salary (only non-manager loses gaji harian)
+          const shouldCutGaji = !isStaffManager && payrollSettings.potongGajiHarian.absenNonManager
+          if (!shouldCutGaji) {
+            totalHariKerja++ // Manager keeps the working day payment even when absent
+          }
+
+          // Check if should get uang makan when absent
+          const shouldCutUangMakan = isStaffManager
+            ? payrollSettings.potongUangMakan.absenManager
+            : payrollSettings.potongUangMakan.absenNonManager
+
+          if (!shouldCutUangMakan) {
+            hariMakan++ // Gets uang makan even when absent
+          }
+
+          return // Done processing this absen row
+        }
+
         // Parse izin information from the tanggal column
         const izinInfo = parseIzinFromTanggal(row.Tanggal)
 
@@ -601,11 +718,21 @@ export default function Home() {
           // No izin = working day
           totalHariKerja++
 
-          // Check uang makan eligibility
+          // Check uang makan eligibility based on settings
           let eligibleForMakan = true
 
-          // Automatic uang makan cut: late >= 1 hour (without izin pengajuan) OR checkout <= 17:00
-          if (isLateOneHourOrMore(row.Terlambat) || isEarlyCheckout(row.Pulang, false)) {
+          // Check late more than 1 hour
+          if (payrollSettings.potongUangMakan.lateMoreThan1Hour && isLateOneHourOrMore(row.Terlambat)) {
+            eligibleForMakan = false
+          }
+
+          // Check checkout at exactly 17:00
+          if (payrollSettings.potongUangMakan.checkoutAt17 && row.Pulang === '17:00') {
+            eligibleForMakan = false
+          }
+
+          // Check checkout before 17:00
+          if (payrollSettings.potongUangMakan.checkoutBefore17 && isEarlyCheckout(row.Pulang, false) && row.Pulang !== '17:00') {
             eligibleForMakan = false
           }
 
@@ -645,8 +772,8 @@ export default function Home() {
       } else {
         // Special cases
         if (isBudiSuryanto) {
-          // Budi Suryanto gets full uang makan (26 days)
-          hariMakan = 26
+          // Budi Suryanto gets full uang makan (25 days)
+          hariMakan = 25
         } else if (isAlek) {
           // Alek gets no uang makan (insentif only)
           hariMakan = 0
@@ -946,9 +1073,11 @@ export default function Home() {
     const isAlek = slip.nama.toLowerCase().includes('alek')
 
     return (
-      <div ref={slipRef} className="bg-white space-y-0 max-w-[900px] mx-auto" style={{fontFamily: 'Arial, sans-serif'}}>
-        {/* SECTION 1: Salary Slip Summary */}
-        <div className="p-8 border-4 border-black border-b-0">
+      <div className="space-y-0">
+        {/* Salary Slip Container - this is what gets copied */}
+        <div ref={slipRef} className="bg-white space-y-0 max-w-[900px] mx-auto border-4 border-black" style={{fontFamily: 'Arial, sans-serif'}}>
+          {/* SECTION 1: Salary Slip Summary */}
+          <div className="p-4">
           {/* Header */}
           <div className="flex justify-between items-start mb-3">
             <div>
@@ -956,7 +1085,7 @@ export default function Home() {
               <p className="text-[10px]">Jl. Sidosermo IV Gg. No.37, Surabaya</p>
             </div>
             <div className="text-right">
-              <h2 className="text-2xl font-bold" style={{color: '#999'}}>FABRRIK GROUP</h2>
+              <h2 className="text-2xl font-bold" style={{color: '#999'}}>FABRIK GROUP</h2>
             </div>
           </div>
 
@@ -995,41 +1124,12 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Bank Account Information */}
-              {(staffConfig?.rekening || staffConfig?.atasNamaRekening || staffConfig?.bank) && (
-                <div className="border-2 border-black p-2 mb-3 bg-gray-50">
-                  <h3 className="font-bold mb-1.5 text-[11px] underline">Informasi Rekening</h3>
-                  <div className="space-y-0.5 text-[10px]">
-                    {staffConfig?.bank && (
-                      <div className="flex">
-                        <span className="w-24 font-medium">Bank</span>
-                        <span className="mr-2">:</span>
-                        <span className="font-bold">{staffConfig.bank}</span>
-                      </div>
-                    )}
-                    {staffConfig?.rekening && (
-                      <div className="flex">
-                        <span className="w-24 font-medium">No. Rekening</span>
-                        <span className="mr-2">:</span>
-                        <span className="font-mono font-bold">{staffConfig.rekening}</span>
-                      </div>
-                    )}
-                    {staffConfig?.atasNamaRekening && (
-                      <div className="flex">
-                        <span className="w-24 font-medium">Atas Nama</span>
-                        <span className="mr-2">:</span>
-                        <span className="font-bold">{staffConfig.atasNamaRekening}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
+  
               {/* Signature */}
               <div className="text-right mt-6 text-[10px]">
                 <p>Surabaya, {new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
                 <p className="mt-1">Direktur</p>
-                <p className="mt-12 font-bold">Budi Suryanto</p>
+                <p className="mt-1 font-bold">Budi Suryanto</p>
               </div>
             </>
           ) : (
@@ -1055,12 +1155,12 @@ export default function Home() {
                 <div className="flex">
                   <span className="w-28">Join</span>
                   <span className="mr-2">:</span>
-                  <span>13 Sep 2021</span>
+                  <span>{staffConfig?.joinDate || '-'}</span>
                 </div>
                 <div className="flex">
                   <span className="w-28">Status</span>
                   <span className="mr-2">:</span>
-                  <span>Karyawan Produksi</span>
+                  <span>{staffConfig?.status || 'permanen'}</span>
                 </div>
                 <div className="flex">
                   <span className="w-28">Hari Masuk</span>
@@ -1070,7 +1170,7 @@ export default function Home() {
                 <div className="flex">
                   <span className="w-28">Gaji + UM / hari</span>
                   <span className="mr-2">:</span>
-                  <span>Rp {gajiPerHari.toLocaleString('id-ID')} + Rp {UANG_MAKAN_PER_HARI.toLocaleString('id-ID')}</span>
+                  <span>Rp {(gajiPerHari + UANG_MAKAN_PER_HARI).toLocaleString('id-ID')}</span>
                 </div>
               </div>
 
@@ -1188,54 +1288,25 @@ export default function Home() {
                 )}
               </div>
 
-              {/* Bank Account Information */}
-              {(staffConfig?.rekening || staffConfig?.atasNamaRekening || staffConfig?.bank) && (
-                <div className="border-2 border-black p-2 mt-3 mb-3 bg-gray-50">
-                  <h3 className="font-bold mb-1.5 text-[11px] underline">Informasi Rekening</h3>
-                  <div className="space-y-0.5 text-[10px]">
-                    {staffConfig?.bank && (
-                      <div className="flex">
-                        <span className="w-24 font-medium">Bank</span>
-                        <span className="mr-2">:</span>
-                        <span className="font-bold">{staffConfig.bank}</span>
-                      </div>
-                    )}
-                    {staffConfig?.rekening && (
-                      <div className="flex">
-                        <span className="w-24 font-medium">No. Rekening</span>
-                        <span className="mr-2">:</span>
-                        <span className="font-mono font-bold">{staffConfig.rekening}</span>
-                      </div>
-                    )}
-                    {staffConfig?.atasNamaRekening && (
-                      <div className="flex">
-                        <span className="w-24 font-medium">Atas Nama</span>
-                        <span className="mr-2">:</span>
-                        <span className="font-bold">{staffConfig.atasNamaRekening}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
+  
               {/* Signature */}
               <div className="text-right mt-6 text-[10px]">
                 <p>Surabaya, {new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
                 <p className="mt-1">Direktur</p>
-                <p className="mt-12 font-bold">Budi Suryanto</p>
+                <p className="mt-1 font-bold">Budi Suryanto</p>
               </div>
             </>
           )}
         </div>
 
-        {/* SECTION 2: Lembur & Absensi Tables - Always show for non-Alek or Budi Suryanto */}
+        {/* Lembur & Absensi Tables - Frame outline */}
         {(!isAlek || slip.nama.toLowerCase().includes('budi suryanto')) && (
-          <div className="p-8 border-4 border-black border-t-0">
+          <div className="px-4 pb-4 border-t-4 border-black">
             <div className="grid grid-cols-2 gap-4">
               {/* Left - Lembur Table */}
               <div>
-                <h3 className="font-bold text-[12px] mb-2">DAFTAR LEMBUR {slip.nama.split(' ')[0].toUpperCase()}</h3>
-                <p className="text-[10px] mb-2">{new Date().toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}</p>
+                <h3 className="font-bold text-[12px] mb-1">DAFTAR LEMBUR {slip.nama.split(' ')[0].toUpperCase()}</h3>
+                <p className="text-[10px] mb-1">{new Date().toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}</p>
                 {slip.lembur.length > 0 ? (
                   <div className="border border-black">
                     <table className="w-full border-collapse text-[9px]">
@@ -1282,13 +1353,14 @@ export default function Home() {
 
               {/* Right - Absensi Table */}
               <div>
-                <h3 className="font-bold text-[12px] mb-2">ABSENSI {slip.nama.split(' ')[0].toUpperCase()}</h3>
-                <p className="text-[10px] mb-2">{new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
+                <h3 className="font-bold text-[12px] mb-1">ABSENSI {slip.nama.split(' ')[0].toUpperCase()}</h3>
+                <p className="text-[10px] mb-1">{new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
                 <div className="border border-black">
                   <table className="w-full border-collapse text-[9px]">
                     <thead className="bg-gray-100">
                       <tr>
                         <th className="border border-black px-1 py-1">No</th>
+                        <th className="border border-black px-1 py-1">Hari</th>
                         <th className="border border-black px-1 py-1">Tanggal</th>
                         <th className="border border-black px-1 py-1">Masuk</th>
                         <th className="border border-black px-1 py-1">Pulang</th>
@@ -1300,11 +1372,20 @@ export default function Home() {
                         // Parse izin information from tanggal column
                         const izinInfo = parseIzinFromTanggal(row.Tanggal)
                         const hasIzin = izinInfo.isIzin || (row.Izin && row.Izin.trim() !== '')
+                        const dayName = getDayName(row.Tanggal)
+                        const isLibur = row.Masuk === 'Libur' || isSunday(row.Tanggal)
+                        const isAbsen = row.Masuk === 'Absen'
 
                         let bgColor = ''
                         let keterangan = ''
 
-                        if (hasIzin) {
+                        if (isLibur) {
+                          bgColor = 'bg-red-200' // Libur (red background)
+                          keterangan = 'Libur'
+                        } else if (isAbsen) {
+                          bgColor = 'bg-red-200' // Absen (red background)
+                          keterangan = 'Absen'
+                        } else if (hasIzin) {
                           // Check if uang makan is cut for this izin
                           const jenisIzin = izinInfo.isIzin ? izinInfo.jenisIzin : row.Izin?.toLowerCase() || ''
                           const alasan = izinInfo.isIzin ? izinInfo.alasan : ''
@@ -1342,9 +1423,10 @@ export default function Home() {
                         return (
                           <tr key={i} className={bgColor}>
                             <td className="border border-black px-1 py-1 text-center">{i + 1}</td>
+                            <td className="border border-black px-1 py-1 text-center font-bold">{dayName}</td>
                             <td className="border border-black px-1 py-1 text-center">{row.Tanggal}</td>
-                            <td className="border border-black px-1 py-1 text-center">{row.Masuk}</td>
-                            <td className="border border-black px-1 py-1 text-center">{row.Pulang}</td>
+                            <td className="border border-black px-1 py-1 text-center">{isLibur || isAbsen ? row.Masuk : row.Masuk}</td>
+                            <td className="border border-black px-1 py-1 text-center">{isLibur || isAbsen ? '-' : row.Pulang}</td>
                             <td className="border border-black px-1 py-1 text-center text-[8px]">{keterangan}</td>
                           </tr>
                         )
@@ -1357,6 +1439,37 @@ export default function Home() {
           </div>
         )}
       </div>
+
+      {/* Bank Account Information - Outside copy container */}
+      {(staffConfig?.rekening || staffConfig?.atasNamaRekening || staffConfig?.bank) && (
+        <div className="max-w-[900px] mx-auto mt-2 bg-white p-4 border-2 border-black" style={{fontFamily: 'Arial, sans-serif'}}>
+          <h3 className="font-bold mb-2 text-[11px] underline">Informasi Rekening</h3>
+          <div className="space-y-1 text-[10px]">
+            {staffConfig?.bank && (
+              <div className="flex">
+                <span className="w-24 font-medium">Bank</span>
+                <span className="mr-2">:</span>
+                <span className="font-bold">{staffConfig.bank}</span>
+              </div>
+            )}
+            {staffConfig?.rekening && (
+              <div className="flex">
+                <span className="w-24 font-medium">No. Rekening</span>
+                <span className="mr-2">:</span>
+                <span className="font-mono font-bold">{staffConfig.rekening}</span>
+              </div>
+            )}
+            {staffConfig?.atasNamaRekening && (
+              <div className="flex">
+                <span className="w-24 font-medium">Atas Nama</span>
+                <span className="mr-2">:</span>
+                <span className="font-bold">{staffConfig.atasNamaRekening}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
     )
   }
 
@@ -1367,29 +1480,39 @@ export default function Home() {
           <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             💼 Payroll360 Automation
           </h1>
-          {step === 'upload' && !isEditMode && (
-            <button
-              onClick={() => {
-                const password = prompt('Masukkan password:')
-                if (password === EDIT_PASSWORD) {
-                  setIsEditMode(true)
-                } else if (password) {
-                  alert('Password salah!')
-                }
-              }}
-              className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
-            >
-              ⚙️ Edit Staff Salaries
-            </button>
-          )}
-          {isEditMode && (
-            <button
-              onClick={() => setIsEditMode(false)}
-              className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
-            >
-              🔒 Lock Edit Mode
-            </button>
-          )}
+          <div className="flex gap-3">
+            {step === 'upload' && !isEditMode && (
+              <>
+                <button
+                  onClick={() => setShowSettings(true)}
+                  className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                >
+                  ⚙️ Rules Settings
+                </button>
+                <button
+                  onClick={() => {
+                    const password = prompt('Masukkan password:')
+                    if (password === EDIT_PASSWORD) {
+                      setIsEditMode(true)
+                    } else if (password) {
+                      alert('Password salah!')
+                    }
+                  }}
+                  className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                >
+                  👥 Edit Staff Salaries
+                </button>
+              </>
+            )}
+            {isEditMode && (
+              <button
+                onClick={() => setIsEditMode(false)}
+                className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+              >
+                🔒 Lock Edit Mode
+              </button>
+            )}
+          </div>
         </div>
 
         {step === 'upload' && !isEditMode && (
@@ -2089,6 +2212,154 @@ export default function Home() {
                   className="flex-1 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-6 py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
                 >
                   {currentNewStaffIndex < newStaffDetected.length - 1 ? '⏭️ Skip This Staff' : '⏭️ Skip All & Continue to Lembur'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Settings Modal */}
+        {showSettings && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowSettings(false)}>
+            <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-2xl w-full m-4 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-3xl font-bold text-gray-800">Payroll Rules Settings</h2>
+                <button
+                  onClick={() => setShowSettings(false)}
+                  className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
+                >
+                  ×
+                </button>
+              </div>
+
+              {/* Potong Uang Makan Section */}
+              <div className="mb-8">
+                <h3 className="text-xl font-bold text-blue-600 mb-4 flex items-center">
+                  <span className="mr-2">🍽️</span>
+                  Potong Uang Makan
+                </h3>
+                <div className="space-y-3 pl-6">
+                  <label className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer">
+                    <span className="text-gray-700">Terlambat lebih dari 1 jam</span>
+                    <input
+                      type="checkbox"
+                      checked={payrollSettings.potongUangMakan.lateMoreThan1Hour}
+                      onChange={(e) => setPayrollSettings({
+                        ...payrollSettings,
+                        potongUangMakan: {
+                          ...payrollSettings.potongUangMakan,
+                          lateMoreThan1Hour: e.target.checked
+                        }
+                      })}
+                      className="w-5 h-5 text-blue-600 cursor-pointer"
+                    />
+                  </label>
+
+                  <label className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer">
+                    <span className="text-gray-700">Check out tepat jam 17:00</span>
+                    <input
+                      type="checkbox"
+                      checked={payrollSettings.potongUangMakan.checkoutAt17}
+                      onChange={(e) => setPayrollSettings({
+                        ...payrollSettings,
+                        potongUangMakan: {
+                          ...payrollSettings.potongUangMakan,
+                          checkoutAt17: e.target.checked
+                        }
+                      })}
+                      className="w-5 h-5 text-blue-600 cursor-pointer"
+                    />
+                  </label>
+
+                  <label className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer">
+                    <span className="text-gray-700">Check out sebelum 17:00</span>
+                    <input
+                      type="checkbox"
+                      checked={payrollSettings.potongUangMakan.checkoutBefore17}
+                      onChange={(e) => setPayrollSettings({
+                        ...payrollSettings,
+                        potongUangMakan: {
+                          ...payrollSettings.potongUangMakan,
+                          checkoutBefore17: e.target.checked
+                        }
+                      })}
+                      className="w-5 h-5 text-blue-600 cursor-pointer"
+                    />
+                  </label>
+
+                  <label className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer">
+                    <span className="text-gray-700">Absen (tidak masuk) - Manager</span>
+                    <input
+                      type="checkbox"
+                      checked={payrollSettings.potongUangMakan.absenManager}
+                      onChange={(e) => setPayrollSettings({
+                        ...payrollSettings,
+                        potongUangMakan: {
+                          ...payrollSettings.potongUangMakan,
+                          absenManager: e.target.checked
+                        }
+                      })}
+                      className="w-5 h-5 text-blue-600 cursor-pointer"
+                    />
+                  </label>
+
+                  <label className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer">
+                    <span className="text-gray-700">Absen (tidak masuk) - Non-Manager</span>
+                    <input
+                      type="checkbox"
+                      checked={payrollSettings.potongUangMakan.absenNonManager}
+                      onChange={(e) => setPayrollSettings({
+                        ...payrollSettings,
+                        potongUangMakan: {
+                          ...payrollSettings.potongUangMakan,
+                          absenNonManager: e.target.checked
+                        }
+                      })}
+                      className="w-5 h-5 text-blue-600 cursor-pointer"
+                    />
+                  </label>
+                </div>
+              </div>
+
+              {/* Potong Gaji Harian Section */}
+              <div className="mb-6">
+                <h3 className="text-xl font-bold text-red-600 mb-4 flex items-center">
+                  <span className="mr-2">💰</span>
+                  Potong Gaji Harian
+                </h3>
+                <div className="space-y-3 pl-6">
+                  <label className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer">
+                    <span className="text-gray-700">Absen (tidak masuk) - Non-Manager</span>
+                    <input
+                      type="checkbox"
+                      checked={payrollSettings.potongGajiHarian.absenNonManager}
+                      onChange={(e) => setPayrollSettings({
+                        ...payrollSettings,
+                        potongGajiHarian: {
+                          ...payrollSettings.potongGajiHarian,
+                          absenNonManager: e.target.checked
+                        }
+                      })}
+                      className="w-5 h-5 text-red-600 cursor-pointer"
+                    />
+                  </label>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3 mt-8 pt-6 border-t">
+                <button
+                  onClick={() => {
+                    setPayrollSettings(DEFAULT_PAYROLL_SETTINGS)
+                  }}
+                  className="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg font-semibold transition"
+                >
+                  Reset to Default
+                </button>
+                <button
+                  onClick={() => setShowSettings(false)}
+                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition"
+                >
+                  Save & Close
                 </button>
               </div>
             </div>

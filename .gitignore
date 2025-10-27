@@ -35,3 +35,6 @@ next-env.d.ts
 # screenshots
 Screenshot*.png
 node_modules
+
+# claude
+.claude/
