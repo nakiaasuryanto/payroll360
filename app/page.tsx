@@ -136,6 +136,8 @@ const DEFAULT_STAFF_SALARIES: StaffSalary[] = [
   { name: 'Eko Prastio', dailyRate: 180500, manager: 'Widia Novitasari', jabatan: 'Production Jersey', tunjanganJabatan: 0, sumberDana: 'RCP', vgiAmount: 2600000, rekening: '0882343331', atasNamaRekening: 'Eko Prastio', bank: 'BCA', joinDate: '26 Nov 2018', status: 'permanen' },
   { name: 'Tri Hariyono', dailyRate: 129600, manager: 'Widia Novitasari', jabatan: 'SPV Production & QC', tunjanganJabatan: 500000, sumberDana: 'RCP', rekening: '0881849126', atasNamaRekening: 'Tri Hariyono', bank: 'BCA', joinDate: '04 Feb 2020', status: 'permanen' },
   { name: 'Tata Wibowo', dailyRate: 107200, manager: 'Widia Novitasari', jabatan: 'Embordiery', tunjanganJabatan: 0, sumberDana: 'RCP', rekening: '4610545365', atasNamaRekening: 'Tata Wibowo', bank: 'BCA', joinDate: '29 Jan 2020', status: 'permanen' },
+  { name: 'In Amullah An Nafi', dailyRate: 40000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0, sumberDana: 'RCP', rekening: '8374928734', atasNamaRekening: 'Nafi', bank: 'BCA', joinDate: '13 Okt 2025', status: 'training' },
+  { name: 'Muhammad Bintang Ageng', dailyRate: 40000, manager: 'Widia Novitasari', jabatan: 'Operator Jersey', tunjanganJabatan: 0, sumberDana: 'RCP', rekening: '8472347093', atasNamaRekening: 'Bintang', bank: 'BCA', joinDate: '20 Okt 2025', status: 'training' },
   { name: 'Achmad Baidowi', dailyRate: 115200, manager: 'Widia Novitasari', jabatan: 'Cutting Spesialist', tunjanganJabatan: 500000, sumberDana: 'RCP', rekening: '4610484561', atasNamaRekening: 'Achmad Baidowi', bank: 'BCA', joinDate: '13 Sep 2021', status: 'permanen' },
   { name: 'Solikatin', dailyRate: 98000, manager: 'Widia Novitasari', jabatan: 'Embordiery', tunjanganJabatan: 0, sumberDana: 'RCP', rekening: '3251805529', atasNamaRekening: 'Solikatin', bank: 'BCA', joinDate: '18 Aug 2022', status: 'permanen' },
   { name: 'Mita Nur Fitriani', dailyRate: 91600, manager: 'Widia Novitasari', jabatan: 'Workshop General Admin', tunjanganJabatan: 0, sumberDana: 'RCP', rekening: '5060409899', atasNamaRekening: 'Mita NurFitriani', bank: 'BCA', joinDate: '02 Feb 2023', status: 'permanen' },
@@ -146,9 +148,10 @@ const DEFAULT_STAFF_SALARIES: StaffSalary[] = [
   { name: 'Natasha Dwi Aprilia', dailyRate: 48000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0, sumberDana: 'RCP', rekening: '6670880387', atasNamaRekening: 'Natasha Dwi aprilia', bank: 'BCA', joinDate: '06 Aug 2025', status: 'permanen' },
   { name: 'Anis Munawaroh', dailyRate: 40000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0, sumberDana: 'RCP', status: 'permanen' },
   { name: 'Azmil Qurrota A\'yun', dailyRate: 40000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0, sumberDana: 'RCP', status: 'permanen' },
+  { name: 'Alek Sugianto', dailyRate: 0, manager: 'Widia Novitasari', jabatan: 'Staff', tunjanganJabatan: 0, status: 'permanen' },
 
   // KSP + VGI
-  { name: 'Widia Novitasari', dailyRate: 196800, manager: 'Top M', jabatan: 'Manager Production', tunjanganJabatan: 800000, sumberDana: 'KSP', rekening: '0882211043', atasNamaRekening: 'Widia Novitasari', bank: 'BCA', joinDate: '07 Feb 19', status: 'permanen' },
+  { name: 'Widia Novitasari', dailyRate: 196800, manager: 'Top M', jabatan: 'Manager Production', tunjanganJabatan: 800000, sumberDana: 'KSP', rekening: '0882211043', atasNamaRekening: 'Widia Novitasari', bank: 'BCA', joinDate: '07 Feb 2019', status: 'permanen' },
   { name: 'Diah Ayu Fajar Cahyaningrum', dailyRate: 146000, manager: 'Top M', jabatan: 'Sales & Client Relations Manager', tunjanganJabatan: 400000, sumberDana: 'KSP', vgiAmount: 2500000, rekening: '0882211060', atasNamaRekening: 'Diah Ayu Cahyaningrum', bank: 'BCA', joinDate: '26 Aug 2019', status: 'permanen' },
   { name: 'Nadira Maysa Suryanto', dailyRate: 132000, manager: 'Top M', jabatan: 'Marketing & Partnerships Manager', tunjanganJabatan: 500000, sumberDana: 'KSP', rekening: '0640674296', atasNamaRekening: 'Nadira Maysa Suryanto', bank: 'BCA', joinDate: '08 Sep 2023', status: 'permanen' },
 
@@ -162,7 +165,6 @@ const DEFAULT_STAFF_SALARIES: StaffSalary[] = [
   { name: 'Titin', dailyRate: 150000, manager: 'Widia Novitasari', jabatan: 'Embordiery', tunjanganJabatan: 0, joinDate: '18 Aug 2022', status: 'permanen' },
   { name: 'Bahriyah Nurjannah', dailyRate: 150000, manager: 'Widia Novitasari', jabatan: 'Staff', tunjanganJabatan: 0, joinDate: '', status: 'permanen' },
   { name: 'Ade Andreans S', dailyRate: 150000, manager: 'Widia Novitasari', jabatan: 'Staff', tunjanganJabatan: 0, joinDate: '', status: 'permanen' },
-  { name: 'Alek Sugianto', dailyRate: 150000, manager: 'Widia Novitasari', jabatan: 'Staff', tunjanganJabatan: 0, status: 'permanen' }
 ]
 
 const UANG_MAKAN_PER_HARI = 12000
@@ -313,6 +315,8 @@ const MANAGER_STAFF_MAP: { [key: string]: string } = {
 
   // Widia Novitasari's team
   'Eko Prastio': 'Widia Novitasari',
+  'In Amullah An Nafi': 'Widia Novitasari',
+  'Muhammad Bintang Ageng': 'Widia Novitasari',
   'Tri Hariyono': 'Widia Novitasari',
   'Tata Wibowo': 'Widia Novitasari',
   'Achmad Baidowi': 'Widia Novitasari',
