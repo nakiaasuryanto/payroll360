@@ -148,7 +148,7 @@ const DEFAULT_STAFF_SALARIES: StaffSalary[] = [
   { name: 'Widodo Saputra', dailyRate: 56000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0, insentif: 0, sumberDana: 'RCP', rekening: '3252045047', atasNamaRekening: 'Hesti Dwi Anggraeni', bank: 'BCA', joinDate: '07 Jan 2025', status: 'permanen' },
   { name: 'Natasha Dwi Aprilia', dailyRate: 48000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0, insentif: 0, sumberDana: 'RCP', rekening: '6670880387', atasNamaRekening: 'Natasha Dwi aprilia', bank: 'BCA', joinDate: '06 Aug 2025', status: 'permanen' },
   { name: 'Anis Munawaroh', dailyRate: 40000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0, insentif: 0, sumberDana: 'RCP', status: 'permanen' },
-  { name: 'Azmil Qurrota A\'yun', dailyRate: 40000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0, insentif: 0, sumberDana: 'RCP', status: 'permanen' },
+  { name: 'Azmil Qurrota A\'yun', dailyRate: 48000, manager: 'Widia Novitasari', jabatan: 'Production Helper', tunjanganJabatan: 0, insentif: 0, sumberDana: 'RCP', rekening: '', atasNamaRekening: '', bank: 'BCA', joinDate: '01 Sep 2025', status: 'permanen' },
   { name: 'Alek Sugianto', dailyRate: 0, manager: 'Widia Novitasari', jabatan: 'Staff', tunjanganJabatan: 0, insentif: 0, status: 'permanen' },
 
   // KSP + VGI
